@@ -6,6 +6,7 @@ namespace codexhere.Util {
         public class Node {
             public Vector3 Position { get; }
             public float Size { get; }
+            public float HalfSize => Size / 2;
 
             public IList<Node> Children { get; private set; }
             public NodeType Value { get; }
@@ -16,12 +17,30 @@ namespace codexhere.Util {
                 Size = size;
             }
 
-            public void Insert(NodeType data, Vector3 addPosition) {
+            public bool Insert(NodeType data, Vector3 addPosition, float size) {
+                bool contains = Contains(addPosition, size);
+
+                if (!contains) {
+                    return false;
+                }
+
                 if (IsLeaf) {
                     SubDivide();
                 }
-                
-                GetChildIndex(addPosition);
+
+                int idx = GetChildIndex(addPosition);
+                Debug.Log(idx + " contains? " + contains);
+
+                return Children[idx].Insert(data, addPosition, size);
+            }
+
+            public bool Contains(Vector3 lookPosition, float size) {
+                float halfLookSize = size / 2;
+                bool isInX = (lookPosition.x - halfLookSize) > (Position.x - HalfSize) && (lookPosition.x + halfLookSize) < (Position.x + HalfSize);
+                bool isInY = (lookPosition.y - halfLookSize) > (Position.y - HalfSize) && (lookPosition.y + halfLookSize) < (Position.y + HalfSize);
+                bool isInZ = (lookPosition.z - halfLookSize) > (Position.z - HalfSize) && (lookPosition.z + halfLookSize) < (Position.z + HalfSize);
+
+                return isInX && isInY && isInZ;
             }
 
             public void SubDivide() {

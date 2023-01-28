@@ -1,17 +1,23 @@
-using System.Linq;
 using codexhere.Util;
 using UnityEngine;
 
 public class OctreeVisualizer : MonoBehaviour {
     public Transform[] NodePositions;
+    public float MinSize = 1;
 
     private Octree<int> octree;
 
     private void OnDrawGizmos() {
-        octree = new Octree<int>(transform.position, 5);
+        octree = new Octree<int>(transform.position, MinSize);
 
-        if (NodePositions.Count() > 0) {
-            octree.Insert(0, NodePositions[0].position);
+        for (int nodeIdx = 0; nodeIdx < NodePositions.Length; nodeIdx++) {
+            Transform nodePosition = NodePositions[nodeIdx];
+            Bounds nodeBounds = nodePosition.GetComponent<Renderer>().bounds;
+            bool inserted = octree.Insert(nodeIdx, nodePosition.position, nodeBounds.size.magnitude);
+
+            if (inserted) {
+                Debug.Log("Inserted " + nodeIdx + " - " + nodeBounds.size.magnitude);
+            }
         }
 
         DrawNode(octree.RootNode);
@@ -27,7 +33,7 @@ public class OctreeVisualizer : MonoBehaviour {
             Gizmos.DrawWireCube(node.Position, Vector3.one * node.Size);
         } else {
             Gizmos.color = Color.green;
-            Gizmos.DrawCube(node.Position, Vector3.one * node.Size);
+            Gizmos.DrawWireCube(node.Position, Vector3.one * node.Size);
         }
 
     }
