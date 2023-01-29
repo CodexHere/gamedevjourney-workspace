@@ -15,12 +15,12 @@ namespace codexhere.Util {
 
         public Node RootNode { get; }
 
-        public Octree(Vector3 position, float minSize = 1) {
-            RootNode = new Node(position, minSize);
+        public Octree(Vector3 position, float size, float minSize) {
+            RootNode = new Node(position, size, minSize);
         }
 
-        public bool Insert(NodeType data, Vector3 lookPosition, float size) {
-            return RootNode.Insert(data, lookPosition, size);
+        public bool Insert(NodeType data, Vector3 lookPosition) {
+            return RootNode.Insert(data, lookPosition);
         }
     }
 }
