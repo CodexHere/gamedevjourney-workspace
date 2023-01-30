@@ -8,6 +8,7 @@ csharp_new_line_before_finally = false
 csharp_new_line_before_members_in_anonymous_types = false
 csharp_new_line_before_members_in_object_initializers = false
 csharp_new_line_between_query_expression_clauses = true
-# Unused Using Directives
-# dotnet_diagnostic.IDE0005.severity = error
-# dotnet_diagnostic.IDE0090.severity = none
+
+# Disable errors about "new/Object initialization can be siplified"
+dotnet_diagnostic.IDE0090.severity = none
+dotnet_diagnostic.IDE0017.severity = none
