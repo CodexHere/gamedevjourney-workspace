@@ -1,3 +1,4 @@
+using System;
 using codexhere.Util;
 using UnityEngine;
 
@@ -10,6 +11,10 @@ public class OctreeVisualizer : MonoBehaviour {
 
     private void OnDrawGizmos() {
         octree = new Octree<int>(transform.position, Size, MinSize);
+
+        if (0 >= MinSize) {
+            throw new Exception("MinSize must be greater than Zero to avoid infinite recursion!");
+        }
 
         for (int nodeIdx = 0; nodeIdx < NodePositions.Length; nodeIdx++) {
             _ = octree.Insert(nodeIdx + 1, NodePositions[nodeIdx].position);

@@ -21,15 +21,14 @@ namespace codexhere.Util {
             RootNode = new Node(position, size, minSize);
         }
 
-        public bool Insert(NodeType data, Vector3 lookPosition) {
-            Node newNode = RootNode.Insert(data, lookPosition);
+        public Node Insert(NodeType data, Vector3 lookPosition) {
+            Node insertedIntoNode = RootNode.Insert(data, lookPosition);
 
-            if (null != newNode) {
-                MaxDepth = Math.Max(newNode.Depth, MaxDepth);
-                return true;
+            if (null != insertedIntoNode) {
+                MaxDepth = Math.Max(insertedIntoNode.Depth, MaxDepth);
             }
 
-            return false;
+            return insertedIntoNode;
         }
     }
 }

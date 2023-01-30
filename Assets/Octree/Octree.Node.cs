@@ -70,16 +70,6 @@ namespace codexhere.Util {
                     Children[childIdx] = new Node(childPos, Size * 0.5f, MinSize, Depth + 1);
                 }
             }
-
-            public int GetChildIndex(Vector3 lookPosition) {
-                int childIndex = 0;
-
-                childIndex |= lookPosition.y > Position.y ? 4 : 0;
-                childIndex |= lookPosition.x > Position.x ? 2 : 0;
-                childIndex |= lookPosition.z > Position.z ? 1 : 0;
-
-                return childIndex;
-            }
         }
     }
 }
