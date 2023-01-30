@@ -5,32 +5,34 @@ namespace codexhere.Util {
     public partial class Octree<NodeType> {
         public class Node {
             public Vector3 Position { get; }
-            public NodeType Data { get; internal set; }
+            public NodeType Data { get; protected set; }
             public float Size { get; }
             public float MinSize { get; }
             public float HalfSize => Size / 2;
 
+            public int Depth { get; } = 1;
             public IList<Node> Children { get; private set; }
             public NodeType Value { get; }
             public bool IsLeaf => null == Children || 0 == Children.Count;
 
-            public Node(Vector3 position, float size, float minSize) {
+            public Node(Vector3 position, float size, float minSize, int depth = 1) {
                 Position = position;
                 Size = size;
                 MinSize = minSize;
+                Depth = depth;
             }
 
-            public bool Insert(NodeType data, Vector3 addPosition) {
+            public Node Insert(NodeType data, Vector3 addPosition) {
                 // We've reached the minimum size, we can't divide anymore!
                 if (Size < MinSize) {
                     Data = data;
-                    return true;
+                    return this;
                 }
 
                 bool contains = Contains(addPosition);
 
                 if (!contains) {
-                    return false;
+                    return null;
                 }
 
                 if (IsLeaf) {
@@ -43,7 +45,7 @@ namespace codexhere.Util {
                     }
                 }
 
-                return false;
+                return null;
             }
 
             public bool Contains(Vector3 lookPosition) {
@@ -65,7 +67,7 @@ namespace codexhere.Util {
                     childPos.x += ((childIdx & 2) == 2) ? -childSize : childSize;
                     childPos.z += ((childIdx & 1) == 1) ? -childSize : childSize;
 
-                    Children[childIdx] = new Node(childPos, Size * 0.5f, MinSize);
+                    Children[childIdx] = new Node(childPos, Size * 0.5f, MinSize, Depth + 1);
                 }
             }
 

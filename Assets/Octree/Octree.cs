@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace codexhere.Util {
@@ -14,13 +15,21 @@ namespace codexhere.Util {
         }
 
         public Node RootNode { get; }
+        public int MaxDepth { get; protected set; }
 
         public Octree(Vector3 position, float size, float minSize) {
             RootNode = new Node(position, size, minSize);
         }
 
         public bool Insert(NodeType data, Vector3 lookPosition) {
-            return RootNode.Insert(data, lookPosition);
+            Node newNode = RootNode.Insert(data, lookPosition);
+
+            if (null != newNode) {
+                MaxDepth = Math.Max(newNode.Depth, MaxDepth);
+                return true;
+            }
+
+            return false;
         }
     }
 }
