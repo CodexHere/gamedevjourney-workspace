@@ -2,17 +2,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace codexhere.Util {
-    public partial class Octree<NodeType> {
+    public partial class OctreePoint<NodeDataType> {
         public class Node {
             public Vector3 Position { get; }
-            public NodeType Data { get; protected set; }
+            public NodeDataType Data { get; protected set; }
             public float Size { get; }
             public float MinSize { get; }
             public float HalfSize => Size / 2;
 
             public int Depth { get; } = 1;
-            public IList<Node> Children { get; private set; }
-            public NodeType Value { get; }
+            public IList<Node> Children { get; protected set; }
+            public NodeDataType Value { get; }
             public bool IsLeaf => null == Children || 0 == Children.Count;
 
             public Node(Vector3 position, float size, float minSize, int depth = 1) {
@@ -22,7 +22,7 @@ namespace codexhere.Util {
                 Depth = depth;
             }
 
-            public Node Insert(NodeType data, Vector3 addPosition) {
+            public Node Insert(NodeDataType data, Vector3 addPosition) {
                 // We've reached the minimum size, we can't divide anymore!
                 if (Size < MinSize) {
                     Data = data;
