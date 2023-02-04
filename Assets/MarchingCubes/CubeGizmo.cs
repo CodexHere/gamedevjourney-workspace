@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [ExecuteInEditMode]
@@ -8,11 +9,20 @@ public class CubeGizmo : MonoBehaviour {
     private int lastRenderedConfigIndex = 1;
     private MeshFilter meshFilter;
     private MarchingCubes marcher;
+    private List<Vector3> vertices;
+    private List<int> triangles;
+    private Mesh mesh;
 
     private void Awake() {
         Debug.Log("Initializing Marching Cubes Gizmo");
         meshFilter = gameObject.GetComponent<MeshFilter>();
         marcher = new MarchingCubes(transform.position);
+
+        mesh = new Mesh();
+        vertices = new List<Vector3>();
+        triangles = new List<int>();
+
+        meshFilter.mesh = mesh;
     }
 
     private void Update() {
@@ -22,16 +32,21 @@ public class CubeGizmo : MonoBehaviour {
             lastRenderedConfigIndex = configIndex;
             configIndex = Mathf.Clamp(configIndex, 0, 255);
 
-            marcher.ClearMesh();
-            marcher.MarchCube(marcher.Origin, configIndex);
-            Mesh mesh = marcher.BuildMesh();
+            // Clear out the existing mesh data
+            mesh.Clear();
+            vertices.Clear();
+            triangles.Clear();
 
-            meshFilter.mesh = mesh;
+            // Write new mesh data directly to running vert/triangle lists
+            MarchingCubes.AddCubeToMeshData(marcher.Origin, configIndex, ref vertices, ref triangles);
+
+            // Update Mesh
+            mesh.vertices = vertices.ToArray();
+            mesh.triangles = triangles.ToArray();
         }
     }
 
     private void OnDrawGizmos() {
         Gizmos.DrawWireCube(transform.position + (transform.localScale / 2), transform.localScale);
     }
-
 }

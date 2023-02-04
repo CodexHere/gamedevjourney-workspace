@@ -28,7 +28,7 @@ public class MarchingCubes {
         return mesh;
     }
 
-    public void MarchNoise(float3[] noiseMap) {
+    public void MarchNoise(float[] noiseMap) {
         // for (int x = 0; x < width + 1; x++) {
         //     for (int y = 0; y < height + 1; y++) {
         //         for (int z = 0; z < depth + 1; z++) {
@@ -40,7 +40,7 @@ public class MarchingCubes {
         // }
     }
 
-    public void MarchCube(Vector3 position, int configIndex) {
+    public static void AddCubeToMeshData(Vector3 position, int configIndex, ref List<Vector3> vertices, ref List<int> triangles) {
         int[] triangleConfig = Tables.Triangles[configIndex];
 
         for (int edgeCheckIndex = 0; edgeCheckIndex < triangleConfig.Length; edgeCheckIndex++) {
@@ -61,4 +61,6 @@ public class MarchingCubes {
             triangles.Add(vertices.Count - 1);
         }
     }
+
+
 }
