@@ -5,8 +5,10 @@ using UnityEngine;
 public class CubeGridGizmo : MonoBehaviour {
     public int width = 8;
     public int height = 4;
-    public float offsetDivisor = 24f;
+    public float scale = 24f;
     public float isoSurface = 0.5f;
+    public Vector3 offset;
+
 
     private float settingsCacheVal; // Junk just to gate updating unless user changes a value
     private float settingsVal = -1;
@@ -14,7 +16,7 @@ public class CubeGridGizmo : MonoBehaviour {
     float[] noiseMap;
 
     private void Update() {
-        settingsCacheVal = width * height * isoSurface;
+        settingsVal = width * height * isoSurface * scale * offset.magnitude;
 
         if (settingsCacheVal == settingsVal) {
             return;
@@ -22,7 +24,7 @@ public class CubeGridGizmo : MonoBehaviour {
 
         settingsCacheVal = settingsVal;
 
-        noiseMap = CubeNoise2D.GenNoise(width, height, offsetDivisor);
+        noiseMap = CubeNoise.TwoD.GenNoise(width, height, offset, scale);
     }
 
     private void OnDrawGizmos() {
@@ -36,7 +38,6 @@ public class CubeGridGizmo : MonoBehaviour {
             }
 
             Color clrVal = Color.Lerp(Color.white, Color.black, isoSurface - val);
-            // Color clrVal = val < isoSurface ? Color.white : Color.black;
             Gizmos.color = clrVal;
 
             Vector3 vert = Utils.GetVertFromIndex(x, width + 1, height + 1);
