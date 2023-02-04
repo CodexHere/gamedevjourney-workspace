@@ -2,14 +2,31 @@ using UnityEngine;
 
 namespace codexhere.MarchingCubes {
     public class Utils {
-        public static int GetIndexFromVert(int x, int y, int z, int width, int height, int depth) {
-            return (x * width) + y * height + z;
+        /**
+        * Access an index based on XYZ Coordinates
+        *
+        * Access is treated as [x, y, z] of a multi-dimensional array (MDA)
+        *
+        * More Info: https://www.youtube.com/watch?v=0V4Y17yWwB0
+        */
+        public static int GetIndexFromVert(int x, int y, int z, int width, int height) {
+            return (y + height * x) * width + z;
+        }
+
+        /**
+        * Get the associated XYZ Coordinates based on an index
+        */
+        public static Vector3 GetVertFromIndex(int index, int width, int height) {
+            int z = index / (width * height);
+            int y = (index - (z * width * height)) / width;
+            int x = (index - (z * width * height)) % width;
+
+            return new Vector3(x, y, z);
         }
     }
 
-
     public class Tables {
-        /** 
+        /**
 		* Vectors that represent the 8 corners of a Cube
 		*/
         public static readonly Vector3Int[] Corners = new Vector3Int[8] {
@@ -23,7 +40,7 @@ namespace codexhere.MarchingCubes {
             new Vector3Int(0, 1, 1)
         };
 
-        /** 
+        /**
 		* Pairs Corners for IsoSurface Density passing a Threshhold.
 		*/
         public static readonly int[][] EdgePairs = new int[12][] {
