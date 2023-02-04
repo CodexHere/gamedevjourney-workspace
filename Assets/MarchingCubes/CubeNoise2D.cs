@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CubeNoise {
     public class TwoD {
-        public static float[] GenNoise(int width, int height, Vector3 offset, float offsetDivisor) {
+        public static float[] GenNoise(int width, int height, Vector3 offset, float scale) {
             width++;
             height++;
             float[] noiseMap = new float[width * height * width];
@@ -14,8 +14,8 @@ public class CubeNoise {
                         int idx = Utils.GetIndexFromVert(x, y, z, width, height);
 
                         noiseMap[idx] = y - height * Mathf.PerlinNoise(
-                            ((x + offset.x) / offsetDivisor) + 0.001f,
-                            ((z + offset.z) / offsetDivisor) + 0.001f
+                            ((x + offset.x) / scale) + 0.001f,
+                            ((z + offset.z) / scale) + 0.001f
                         );
                     }
                 }
