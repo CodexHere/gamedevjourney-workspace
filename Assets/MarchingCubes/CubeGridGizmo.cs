@@ -3,53 +3,55 @@ using UnityEngine;
 
 [ExecuteInEditMode]
 public class CubeGridGizmo : MonoBehaviour {
-    public int width = 8;
-    public int height = 4;
-    public float scale = 24f;
-    public float isoSurface = 0.5f;
-    public Vector3 offset;
-
+    public Vector2Int Size = new Vector2Int(8, 4);
+    public float Scale = 24f;
+    public float IsoSurfaceLevel = 0.5f;
+    public Vector2Int offset = new Vector2Int(0, 0);
+    public MeshFilter meshFilter;
 
     private float settingsCacheVal; // Junk just to gate updating unless user changes a value
     private float settingsVal = -1;
 
-    float[] noiseMap;
+    private Vector2Int NoiseSize => Size + Vector2Int.one;
+
+    private float[] noiseMap;
+    private MarchingCubes marcher;
+
+    private void Awake() {
+        Debug.Log("Initializing Marching Cubes Grid Gizmo");
+
+        meshFilter = gameObject.GetComponent<MeshFilter>();
+    }
 
     private void Update() {
-        settingsVal = width * height * isoSurface * scale * offset.magnitude;
-
+        // Simple value-cache check to see if we should update to avoid over processing
+        settingsVal = Size.magnitude + offset.magnitude + IsoSurfaceLevel + Scale;
         if (settingsCacheVal == settingsVal) {
             return;
         }
-
         settingsCacheVal = settingsVal;
 
-        noiseMap = CubeNoise.TwoD.GenNoise(width, height, offset, scale);
+        // Get the noisemap
+        noiseMap = CubeNoise.TwoD.GenNoise(Size, offset, Scale);
+
+        marcher = new MarchingCubes(transform.position, Size, IsoSurfaceLevel);
+        marcher.MarchNoise(noiseMap);
+
+        Mesh mesh = marcher.BuildMesh();
+        meshFilter.mesh = mesh;
     }
 
     private void OnDrawGizmos() {
         DrawOutline();
 
-        for (int x = 0; x < ((width + 1) * (width + 1) * (height + 1)); x++) {
-            float val = noiseMap[x];
-
-            if (val > isoSurface) {
-                continue;
-            }
-
-            Color clrVal = Color.Lerp(Color.white, Color.black, isoSurface - val);
-            Gizmos.color = clrVal;
-
-            Vector3 vert = Utils.GetVertFromIndex(x, width + 1, height + 1);
-            Gizmos.DrawSphere(vert, 0.1f);
-        }
+        DrawCornerSpheres();
     }
 
-    void DrawOutline() {
+    private void DrawOutline() {
         Gizmos.color = Color.gray;
-        Vector3 up = Vector3.up * height;
-        Vector3 fwd = Vector3.forward * width;
-        Vector3 right = Vector3.right * width;
+        Vector3 up = Vector3.up * Size.y;
+        Vector3 fwd = Vector3.forward * Size.x;
+        Vector3 right = Vector3.right * Size.x;
 
         // Bottom Rect
         Gizmos.DrawLine(transform.position, transform.position + fwd);
@@ -68,5 +70,24 @@ public class CubeGridGizmo : MonoBehaviour {
         Gizmos.DrawLine(transform.position + fwd, transform.position + up + fwd);
         Gizmos.DrawLine(transform.position + right, transform.position + up + right);
         Gizmos.DrawLine(transform.position + fwd + right, transform.position + up + fwd + right);
+    }
+
+    private void DrawCornerSpheres() {
+        if (null == noiseMap || 0 == noiseMap.Length) {
+            return;
+        }
+
+        for (int x = 0; x < (NoiseSize.x * NoiseSize.x * NoiseSize.y); x++) {
+            float val = noiseMap[x];
+
+            if (IsoSurfaceLevel <= val) {
+                continue;
+            }
+
+            Gizmos.color = Color.cyan;
+
+            Vector3 vert = Utils.GetVertFromIndex(x, NoiseSize);
+            Gizmos.DrawSphere(vert, 0.1f);
+        }
     }
 }

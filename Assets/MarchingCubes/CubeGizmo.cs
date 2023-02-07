@@ -8,7 +8,6 @@ public class CubeGizmo : MonoBehaviour {
     private int configIndex = 0;
     private int lastRenderedConfigIndex = 1;
     private MeshFilter meshFilter;
-    private MarchingCubes marcher;
     private List<Vector3> vertices;
     private List<int> triangles;
     private Mesh mesh;
@@ -16,7 +15,6 @@ public class CubeGizmo : MonoBehaviour {
     private void Awake() {
         Debug.Log("Initializing Marching Cubes Gizmo");
         meshFilter = gameObject.GetComponent<MeshFilter>();
-        marcher = new MarchingCubes(transform.position);
 
         mesh = new Mesh();
         vertices = new List<Vector3>();
@@ -38,7 +36,7 @@ public class CubeGizmo : MonoBehaviour {
             triangles.Clear();
 
             // Write new mesh data directly to running vert/triangle lists
-            MarchingCubes.AddCubeToMeshData(marcher.Origin, configIndex, ref vertices, ref triangles);
+            MarchingCubes.AddCubeToMeshData(transform.position, configIndex, ref vertices, ref triangles, false);
 
             // Update Mesh
             mesh.vertices = vertices.ToArray();

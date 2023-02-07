@@ -9,17 +9,18 @@ namespace codexhere.MarchingCubes {
         *
         * More Info: https://www.youtube.com/watch?v=0V4Y17yWwB0
         */
-        public static int GetIndexFromVert(int x, int y, int z, int width, int height) {
-            return (y + height * x) * width + z;
+        public static int GetIndexFromVert(Vector3 position, Vector2Int size) {
+            return (int)((position.y + size.y * position.x) * size.x + position.z);
         }
 
         /**
         * Get the associated XYZ Coordinates based on an index
         */
-        public static Vector3 GetVertFromIndex(int index, int width, int height) {
-            int z = index / (width * height);
-            int y = (index - (z * width * height)) / width;
-            int x = (index - (z * width * height)) % width;
+        public static Vector3 GetVertFromIndex(int index, Vector2Int size) {
+            int area = size.x * size.y;
+            int z = index / area;
+            int y = (index - (z * area)) / size.x;
+            int x = (index - (z * area)) % size.x;
 
             return new Vector3(x, y, z);
         }
