@@ -1,17 +1,25 @@
+using System;
 using System.Collections.Generic;
 using codexhere.MarchingCubes;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Assertions.Comparers;
 
 public class MarchingCubes {
-    private readonly Mesh mesh = new Mesh();
-    private readonly List<int> triangles = new List<int>();
-    private readonly List<Vector3> vertices = new List<Vector3>();
+    public Vector3 Origin { get; }
+    public Vector2Int Size { get; }
 
-    public Vector3 Origin { get; protected set; }
+    readonly Mesh mesh = new Mesh();
+    readonly float IsoSurfaceLevel;
+    List<int> triangles = new List<int>();
+    List<Vector3> vertices = new List<Vector3>();
 
-    public MarchingCubes(Vector3 origin) {
+    Vector2Int NoiseSize { get => Size + Vector2Int.one; }
+
+    public MarchingCubes(Vector3 origin, Vector2Int size, float isoSurfaceLevel) {
         Origin = origin;
+        Size = size;
+        IsoSurfaceLevel = isoSurfaceLevel;
     }
 
     public void ClearMesh() {
@@ -21,6 +29,7 @@ public class MarchingCubes {
 
     public Mesh BuildMesh() {
         mesh.Clear();
+        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.RecalculateNormals();
@@ -29,15 +38,44 @@ public class MarchingCubes {
     }
 
     public void MarchNoise(float[] noiseMap) {
-        // for (int x = 0; x < width + 1; x++) {
-        //     for (int y = 0; y < height + 1; y++) {
-        //         for (int z = 0; z < depth + 1; z++) {
-        //             int idx = Utils.GetIndexFromVert(x, y, z, width, height, depth);
+        for (int x = 0; x < Size.x; x++) {
+            for (int y = 0; y < Size.y; y++) {
+                for (int z = 0; z < Size.x; z++) {
+                    Vector3 cubePosition = new Vector3(x, y, z);
+                    int idx = Utils.GetIndexFromVert(cubePosition, NoiseSize);
 
-        //             noiseMap[idx] = height * Mathf.PerlinNoise((float)x / offsetDivisor + 0.001f, (float)y / offsetDivisor + 0.001f);
-        //         }
-        //     }
-        // }
+                    float[] cubeData = BuildCubeData(cubePosition, noiseMap);
+
+                    int cubeConfigIdx = GetCubeConfigIndex(cubeData);
+
+                    AddCubeToMeshData(cubePosition, cubeConfigIdx, ref vertices, ref triangles);
+                }
+            }
+        }
+    }
+
+    int GetCubeConfigIndex(float[] cubeData) {
+        int configIndex = 0;
+
+        for (int cornerIdx = 0; cornerIdx < cubeData.Length; cornerIdx++) {
+            if (IsoSurfaceLevel <= cubeData[cornerIdx]) {
+                configIndex |= 1 << cornerIdx;
+            }
+        }
+
+        return configIndex;
+    }
+
+    float[] BuildCubeData(Vector3 cubePosition, float[] noiseMap) {
+        float[] cubeData = new float[8];
+
+        for (int cornerIdx = 0; cornerIdx < Tables.Corners.Length; cornerIdx++) {
+            Vector3 cornerPos = cubePosition + Tables.Corners[cornerIdx];
+            int cornerValIdx = Utils.GetIndexFromVert(cornerPos, NoiseSize);
+            cubeData[cornerIdx] = noiseMap[cornerValIdx];
+        }
+
+        return cubeData;
     }
 
     public static void AddCubeToMeshData(Vector3 position, int configIndex, ref List<Vector3> vertices, ref List<int> triangles) {
@@ -57,10 +95,9 @@ public class MarchingCubes {
 
             Vector3 edgeVert = (vert1 + vert2) / 2f;
 
-            vertices.Add(edgeVert - position);
+            vertices.Add(edgeVert + position);
             triangles.Add(vertices.Count - 1);
         }
     }
-
 
 }
