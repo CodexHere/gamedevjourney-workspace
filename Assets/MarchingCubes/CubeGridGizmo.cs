@@ -15,11 +15,13 @@ public class CubeGridGizmo : MonoBehaviour {
     float[] noiseMap;
     MarchingCubes marcher;
     MeshFilter meshFilter;
+    private MeshCollider meshCollider;
 
     void Awake() {
         Debug.Log("Initializing Marching Cubes Grid Gizmo");
 
         meshFilter = GetComponent<MeshFilter>();
+        meshCollider = GetComponent<MeshCollider>();
     }
 
     void Update() {
@@ -36,6 +38,8 @@ public class CubeGridGizmo : MonoBehaviour {
         marcher.ClearMesh();
         marcher.MarchNoise(noiseMap);
         meshFilter.mesh = marcher.BuildMesh();
+
+        meshCollider.sharedMesh = meshFilter.mesh;
     }
 
     void OnDrawGizmos() {
@@ -72,13 +76,8 @@ public class CubeGridGizmo : MonoBehaviour {
         for (int x = 0; x < (NoiseSize.x * NoiseSize.x * NoiseSize.y); x++) {
             float val = noiseMap[x];
 
-            if (val > IsoSurfaceLevel) {
-                continue;
-            }
-
-            Color clrVal = Color.Lerp(Color.white, Color.black, IsoSurfaceLevel - val);
+            Color clrVal = (val > IsoSurfaceLevel) ? new Color(1, 1, 1, 0.1f) : Color.Lerp(Color.white, Color.black, IsoSurfaceLevel - val);
             Gizmos.color = clrVal;
-
             Vector3 vert = Utils.GetVertFromIndex(x, NoiseSize);
             Gizmos.DrawSphere(vert, 0.1f);
         }
