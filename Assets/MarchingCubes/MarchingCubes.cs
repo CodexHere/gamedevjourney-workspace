@@ -1,20 +1,17 @@
-using System;
 using System.Collections.Generic;
 using codexhere.MarchingCubes;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Assertions.Comparers;
 
 public class MarchingCubes {
     public Vector3 Origin { get; }
     public Vector2Int Size { get; }
 
-    readonly Mesh mesh = new Mesh();
-    readonly float IsoSurfaceLevel;
-    List<int> triangles = new List<int>();
-    List<Vector3> vertices = new List<Vector3>();
+    private readonly Mesh mesh = new Mesh();
+    private readonly float IsoSurfaceLevel;
+    private List<int> triangles = new List<int>();
+    private List<Vector3> vertices = new List<Vector3>();
 
-    Vector2Int NoiseSize { get => Size + Vector2Int.one; }
+    private Vector2Int NoiseSize => Size + Vector2Int.one;
 
     public MarchingCubes(Vector3 origin, Vector2Int size, float isoSurfaceLevel) {
         Origin = origin;
@@ -54,7 +51,7 @@ public class MarchingCubes {
         }
     }
 
-    int GetCubeConfigIndex(float[] cubeData) {
+    private int GetCubeConfigIndex(float[] cubeData) {
         int configIndex = 0;
 
         for (int cornerIdx = 0; cornerIdx < cubeData.Length; cornerIdx++) {
@@ -66,7 +63,7 @@ public class MarchingCubes {
         return configIndex;
     }
 
-    float[] BuildCubeData(Vector3 cubePosition, float[] noiseMap) {
+    private float[] BuildCubeData(Vector3 cubePosition, float[] noiseMap) {
         float[] cubeData = new float[8];
 
         for (int cornerIdx = 0; cornerIdx < Tables.Corners.Length; cornerIdx++) {

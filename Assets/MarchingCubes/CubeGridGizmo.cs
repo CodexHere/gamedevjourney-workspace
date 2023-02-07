@@ -8,23 +8,24 @@ public class CubeGridGizmo : MonoBehaviour {
     public float Scale = 24f;
     public float IsoSurfaceLevel = 0.5f;
     public Vector3 offset;
+    private float settingsCacheVal; // Junk just to gate updating unless user changes a value
+    private float settingsVal = -1;
 
-    float settingsCacheVal; // Junk just to gate updating unless user changes a value
-    float settingsVal = -1;
-    Vector2Int NoiseSize => Size + Vector2Int.one;
-    float[] noiseMap;
-    MarchingCubes marcher;
-    MeshFilter meshFilter;
+    private Vector2Int NoiseSize => Size + Vector2Int.one;
+
+    private float[] noiseMap;
+    private MarchingCubes marcher;
+    private MeshFilter meshFilter;
     private MeshCollider meshCollider;
 
-    void Awake() {
+    private void Awake() {
         Debug.Log("Initializing Marching Cubes Grid Gizmo");
 
         meshFilter = GetComponent<MeshFilter>();
         meshCollider = GetComponent<MeshCollider>();
     }
 
-    void Update() {
+    private void Update() {
         settingsVal = Size.magnitude + IsoSurfaceLevel + Scale + offset.magnitude;
 
         if (settingsCacheVal == settingsVal) {
@@ -42,12 +43,12 @@ public class CubeGridGizmo : MonoBehaviour {
         meshCollider.sharedMesh = meshFilter.mesh;
     }
 
-    void OnDrawGizmos() {
+    private void OnDrawGizmos() {
         DrawOutline();
         DrawCornerSpheres();
     }
 
-    void DrawOutline() {
+    private void DrawOutline() {
         Gizmos.color = Color.gray;
         Vector3 up = Vector3.up * Size.y;
         Vector3 fwd = Vector3.forward * Size.x;
@@ -72,7 +73,7 @@ public class CubeGridGizmo : MonoBehaviour {
         Gizmos.DrawLine(transform.position + fwd + right, transform.position + up + fwd + right);
     }
 
-    void DrawCornerSpheres() {
+    private void DrawCornerSpheres() {
         for (int x = 0; x < (NoiseSize.x * NoiseSize.x * NoiseSize.y); x++) {
             float val = noiseMap[x];
 

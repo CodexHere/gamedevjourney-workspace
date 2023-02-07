@@ -13,10 +13,10 @@ public class CubeNoise {
                     for (int z = 0; z < size.x; z++) {
                         int idx = Utils.GetIndexFromVert(new Vector3(x, y, z), size);
 
-                        noiseMap[idx] = y - size.y * Mathf.PerlinNoise(
+                        noiseMap[idx] = y - (size.y * Mathf.PerlinNoise(
                             ((x + offset.x) / scale) + 0.001f,
                             ((z + offset.z) / scale) + 0.001f
-                        );
+                        ));
                     }
                 }
             }
