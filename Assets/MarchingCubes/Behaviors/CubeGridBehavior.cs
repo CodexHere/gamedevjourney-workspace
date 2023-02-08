@@ -9,7 +9,9 @@ public class CubeGridBehavior : MonoBehaviour {
     [SerializeField]
     private float IsoSurfaceLevel = 0.5f;
     [SerializeField]
-    private Vector3 offset;
+    private Vector3 Offset;
+    [SerializeField]
+    private bool Smooth;
     private float settingsCacheVal; // Junk just to gate updating unless user changes a value
     private float settingsVal = -1;
     private float[] noiseMap;
@@ -23,7 +25,7 @@ public class CubeGridBehavior : MonoBehaviour {
     }
 
     private void Update() {
-        settingsVal = Size.magnitude + IsoSurfaceLevel + Scale + offset.magnitude;
+        settingsVal = Size.magnitude + IsoSurfaceLevel + Scale + Offset.magnitude;
 
         if (settingsCacheVal == settingsVal) {
             return;
@@ -31,11 +33,18 @@ public class CubeGridBehavior : MonoBehaviour {
 
         settingsCacheVal = settingsVal;
 
-        noiseMap = CubeNoise.TwoD.GenNoise(Size, offset, Scale);
-        marcher = new MarchingCubes(transform.position, Size, IsoSurfaceLevel);
+        noiseMap = CubeNoise.TwoD.GenNoise(Size, Offset, Scale);
+        marcher = new MarchingCubes(transform.position, Size, IsoSurfaceLevel, Smooth);
         marcher.ClearMesh();
         marcher.MarchNoise(noiseMap);
-        meshFilter.mesh = marcher.BuildMesh();
+
+        Mesh mesh = marcher.BuildMesh();
+
+        if (Application.isEditor) {
+            meshFilter.sharedMesh = mesh;
+        } else {
+            meshFilter.mesh = mesh;
+        }
     }
 
 }

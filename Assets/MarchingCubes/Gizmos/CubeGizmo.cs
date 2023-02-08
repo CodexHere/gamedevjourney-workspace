@@ -35,8 +35,8 @@ public class CubeGizmo : MonoBehaviour {
             vertices.Clear();
             triangles.Clear();
 
-            // Write new mesh data directly to running vert/triangle lists
-            MarchingCubes.AddCubeToMeshData(transform.position, configIndex, ref vertices, ref triangles);
+            // Write new mesh data directly to running vert/triangle lists (with null cubeData)
+            MarchingCubes.AddCubeToMeshData(transform.position, configIndex, new float[] { }, 1, false, ref vertices, ref triangles);
 
             // Update Mesh
             mesh.vertices = vertices.ToArray();
