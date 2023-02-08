@@ -38,9 +38,16 @@ public class CubeGridGizmo : MonoBehaviour {
         marcher = new MarchingCubes(transform.position, Size, IsoSurfaceLevel);
         marcher.ClearMesh();
         marcher.MarchNoise(noiseMap);
-        meshFilter.mesh = marcher.BuildMesh();
 
-        meshCollider.sharedMesh = meshFilter.mesh;
+        Mesh mesh = marcher.BuildMesh();
+
+        if (Application.isEditor) {
+            meshFilter.sharedMesh = mesh;
+            meshCollider.sharedMesh = meshFilter.sharedMesh;
+        } else {
+            meshFilter.mesh = mesh;
+            meshCollider.sharedMesh = meshFilter.mesh;
+        }
     }
 
     private void OnDrawGizmos() {
