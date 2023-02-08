@@ -8,6 +8,7 @@ public class CubeGridGizmo : MonoBehaviour {
     public float Scale = 24f;
     public float IsoSurfaceLevel = 0.5f;
     public Vector3 offset;
+    public bool Smooth = false;
     private float settingsCacheVal; // Junk just to gate updating unless user changes a value
     private float settingsVal = -1;
 
@@ -26,7 +27,7 @@ public class CubeGridGizmo : MonoBehaviour {
     }
 
     private void Update() {
-        settingsVal = Size.magnitude + IsoSurfaceLevel + Scale + offset.magnitude;
+        settingsVal = Size.magnitude + IsoSurfaceLevel + Scale + offset.magnitude + (Smooth ? 1 : -1);
 
         if (settingsCacheVal == settingsVal) {
             return;
@@ -35,7 +36,7 @@ public class CubeGridGizmo : MonoBehaviour {
         settingsCacheVal = settingsVal;
 
         noiseMap = CubeNoise.TwoD.GenNoise(Size, offset, Scale);
-        marcher = new MarchingCubes(transform.position, Size, IsoSurfaceLevel);
+        marcher = new MarchingCubes(transform.position, Size, IsoSurfaceLevel, Smooth);
         marcher.ClearMesh();
         marcher.MarchNoise(noiseMap);
 

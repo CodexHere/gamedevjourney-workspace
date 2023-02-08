@@ -30,7 +30,7 @@ namespace codexhere.MarchingCubes {
         /**
 		* Vectors that represent the 8 corners of a Cube
 		*/
-        public static readonly Vector3Int[] Corners = new Vector3Int[8] {
+        public static readonly Vector3Int[] CornerOffsets = new Vector3Int[8] {
             new Vector3Int(0, 0, 0),
             new Vector3Int(1, 0, 0),
             new Vector3Int(1, 1, 0),

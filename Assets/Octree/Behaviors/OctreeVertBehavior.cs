@@ -15,15 +15,17 @@ public class OctreeVertBehavior : MonoBehaviour {
     }
 
     private void OnDrawGizmos() {
-        if (!meshFilter || !meshFilter.mesh) {
+        Mesh meshToUse = Application.isEditor ? meshFilter.sharedMesh : meshFilter.mesh;
+
+        if (!meshToUse) {
             return;
         }
 
-        Vector3[] verts = meshFilter.mesh.vertices;
+        Vector3[] verts = meshToUse.vertices;
 
         Debug.Log("There are " + verts.Length + " vertices in the mesh");
 
-        octree = new OctreePoint<Vector3>(transform.position + (meshFilter.mesh.bounds.size / 2), cubeGrid.Size.x, 0.1f);
+        octree = new OctreePoint<Vector3>(transform.position + (meshToUse.bounds.size / 2), cubeGrid.Size.x, 0.1f);
 
         for (int vertIdx = 0; vertIdx < verts.Length; vertIdx++) {
             Vector3 vert = verts[vertIdx];

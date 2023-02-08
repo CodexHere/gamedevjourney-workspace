@@ -4,16 +4,16 @@ using UnityEngine;
 public class CubeNoise {
     public class TwoD {
         public static float[] GenNoise(Vector2Int size, Vector3 offset, float scale) {
-            size.x++;
-            size.y++;
-            float[] noiseMap = new float[size.x * size.y * size.x];
+            Vector2Int noiseSize = size + Vector2Int.one;
 
-            for (int x = 0; x < size.x; x++) {
-                for (int y = 0; y < size.y; y++) {
-                    for (int z = 0; z < size.x; z++) {
-                        int idx = Utils.GetIndexFromVert(new Vector3(x, y, z), size);
+            float[] noiseMap = new float[noiseSize.x * noiseSize.y * noiseSize.x];
 
-                        noiseMap[idx] = y - (size.y * Mathf.PerlinNoise(
+            for (int x = 0; x < noiseSize.x; x++) {
+                for (int y = 0; y < noiseSize.y; y++) {
+                    for (int z = 0; z < noiseSize.x; z++) {
+                        int idx = Utils.GetIndexFromVert(new Vector3(x, y, z), noiseSize);
+
+                        noiseMap[idx] = y - (noiseSize.y * Mathf.PerlinNoise(
                             ((x + offset.x) / scale) + 0.001f,
                             ((z + offset.z) / scale) + 0.001f
                         ));
