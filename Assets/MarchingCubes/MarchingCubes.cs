@@ -41,10 +41,7 @@ public class MarchingCubes {
             for (int y = 0; y < Size.y; y++) {
                 for (int z = 0; z < Size.x; z++) {
                     Vector3 cubePosition = new Vector3(x, y, z);
-                    int idx = Utils.GetIndexFromVert(cubePosition, NoiseSize);
-
                     float[] cubeData = BuildCubeData(cubePosition, noiseMap);
-
                     int cubeConfigIdx = GetCubeConfigIndex(cubeData);
 
                     AddCubeToMeshData(cubePosition, cubeConfigIdx, cubeData, IsoSurfaceLevel, Smooth, ref vertices, ref triangles);
