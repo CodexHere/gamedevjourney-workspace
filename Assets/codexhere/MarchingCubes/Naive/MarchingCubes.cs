@@ -101,8 +101,16 @@ namespace codexhere.MarchingCubes.Naive {
                     edgeVert = vert1 + ((vert2 - vert1) * offset);
                 }
 
-                vertices.Add(edgeVert + position);
-                triangles.Add(vertices.Count - 1);
+                Vector3 vertPos = edgeVert + position;
+
+                int vertIndex = -1;//vertices.IndexOf(vertPos);
+
+                if (-1 == vertIndex) {
+                    vertices.Add(vertPos);
+                    triangles.Add(vertices.Count - 1);
+                } else {
+                    triangles.Add(vertIndex);
+                }
             }
         }
 
