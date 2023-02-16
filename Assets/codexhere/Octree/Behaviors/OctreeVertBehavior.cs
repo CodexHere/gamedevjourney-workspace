@@ -1,8 +1,12 @@
+using codexhere.MarchingCubes.Naive.Behaviors;
 using codexhere.Util;
 using UnityEngine;
 
 [ExecuteInEditMode]
 public class OctreeVertBehavior : MonoBehaviour {
+    [Range(0.1f, 2f)]
+    public float MinimumSize = 1;
+
     private CubeGridBehavior cubeGrid;
     private MeshFilter meshFilter;
     private OctreePoint<Vector3> octree;
@@ -25,7 +29,7 @@ public class OctreeVertBehavior : MonoBehaviour {
 
         Debug.Log("There are " + verts.Length + " vertices in the mesh");
 
-        octree = new OctreePoint<Vector3>(transform.position + (meshToUse.bounds.size / 2), cubeGrid.Size.x, 0.1f);
+        octree = new OctreePoint<Vector3>(transform.position + (meshToUse.bounds.size / 2), cubeGrid.Size.x, MinimumSize);
 
         for (int vertIdx = 0; vertIdx < verts.Length; vertIdx++) {
             Vector3 vert = verts[vertIdx];
