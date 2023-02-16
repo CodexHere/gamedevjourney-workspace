@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a02111abfd0ea9024888ec4f35cca405, type: 3}
   m_Name: TwoDNoiseGenerator 0
   m_EditorClassIdentifier: 
-  Scale: 20
+  Scale: 24
   Offset: {x: 0, y: 0, z: 0}
   Octave: 1
