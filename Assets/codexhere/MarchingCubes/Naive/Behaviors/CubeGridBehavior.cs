@@ -13,6 +13,7 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
 
         [SerializeField] private float IsoSurfaceLevel = 0.5f;
         [SerializeField] private bool Smooth;
+        [SerializeField] private bool Live;
         [SerializeField] private bool Refresh;
 
         private float[] noiseMap;
@@ -28,7 +29,7 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
         }
 
         private void Update() {
-            if (Refresh == false) {
+            if (!Live && Refresh == false) {
                 return;
             }
 

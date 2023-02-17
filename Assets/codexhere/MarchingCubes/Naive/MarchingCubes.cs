@@ -103,7 +103,7 @@ namespace codexhere.MarchingCubes.Naive {
 
                 Vector3 vertPos = edgeVert + position;
 
-                int vertIndex = -1;//vertices.IndexOf(vertPos);
+                int vertIndex = vertices.IndexOf(vertPos);
 
                 if (-1 == vertIndex) {
                     vertices.Add(vertPos);
