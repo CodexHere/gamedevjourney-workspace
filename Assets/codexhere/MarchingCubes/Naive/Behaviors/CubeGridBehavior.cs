@@ -1,3 +1,4 @@
+using System;
 using codexhere.MarchingCubes.NoiseGen;
 using UnityEngine;
 
@@ -9,13 +10,13 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
     public class CubeGridBehavior : MonoBehaviour {
         public Vector2Int Size = new Vector2Int(8, 4);
 
-        public NoiseGeneratorScriptableObject[] noiseGeneratorList;
-
         [SerializeField] private float IsoSurfaceLevel = 0.5f;
         [SerializeField] private bool Smooth;
         [SerializeField] private bool Live;
         [SerializeField] private bool Refresh;
 
+        [SerializeReference]
+        private AbstractNoiseGenerator[] noiseGeneratorList = new AbstractNoiseGenerator[] { new TwoD() };
         private float[] noiseMap;
         private MarchingCubes marcher;
         private MeshFilter meshFilter;
@@ -35,14 +36,31 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
 
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
             timer.Start();
+
+            GenerateNoise();
+            GenerateMesh();
+
+            timer.Stop();
+            Debug.Log("CubeGridBehavior Render Time: " + timer.ElapsedMilliseconds);
+
             Refresh = false;
+        }
+
+        private void GenerateNoise() {
+            // noiseGeneratorList = GetComponents<AbstractNoiseGenerator>();
+
+            if (0 == noiseGeneratorList.Length) {
+                throw new Exception("There needs to be at least 1 Noise Generator applied to the GameObject: " + name);
+            }
 
             noiseMap = new float[(Size.x + 1) * (Size.y + 1) * (Size.x + 1)];
 
-            foreach (var noiseGenerator in noiseGeneratorList) {
-                noiseMap = noiseGenerator.GenNoise(noiseMap, Size);
+            for (int noiseIdx = 0; noiseIdx < noiseGeneratorList.Length; noiseIdx++) {
+                noiseMap = noiseGeneratorList[noiseIdx].GenNoise(noiseMap, Size, Vector2.one, 13f, 1);
             }
+        }
 
+        private void GenerateMesh() {
             marcher = new MarchingCubes(transform.position, Size, IsoSurfaceLevel, Smooth);
             marcher.ClearMesh();
             marcher.MarchNoise(noiseMap);
@@ -56,9 +74,7 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
             }
 
             meshCollider.sharedMesh = mesh;
-
-            timer.Stop();
-            Debug.Log("CubeGridBehavior Render Time: " + timer.ElapsedMilliseconds);
         }
+
     }
 }

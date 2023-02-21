@@ -3,10 +3,22 @@ using UnityEngine;
 
 namespace codexhere.Util {
     public partial class OctreePoint<NodeDataType> {
-        public Node RootNode { get; }
+        public Node RootNode { get; protected set; }
         public int MaxDepth { get; protected set; }
 
+        private readonly Vector3 position;
+        private readonly float size;
+        private readonly float minSize;
+
         public OctreePoint(Vector3 position, float size, float minSize) {
+            this.position = position;
+            this.size = size;
+            this.minSize = minSize;
+
+            Clear();
+        }
+
+        public void Clear() {
             RootNode = new Node(position, size, minSize);
         }
 

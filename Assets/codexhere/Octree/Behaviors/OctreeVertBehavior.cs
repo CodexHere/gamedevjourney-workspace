@@ -4,32 +4,34 @@ using UnityEngine;
 
 [ExecuteInEditMode]
 public class OctreeVertBehavior : MonoBehaviour {
-    [Range(0.1f, 2f)]
-    public float MinimumSize = 1;
+    [Range(0.1f, 2f)] public float MinimumSize = 1;
+
+    public bool DrawGizmos = true;
 
     private CubeGridBehavior cubeGrid;
-    private MeshFilter meshFilter;
+    private Mesh meshToUse;
     private OctreePoint<Vector3> octree;
 
     private void Awake() {
         Debug.Log("Initializing Octree Vert Behavior");
 
+        MeshFilter meshFilter = GetComponent<MeshFilter>();
         cubeGrid = GetComponent<CubeGridBehavior>();
-        meshFilter = GetComponent<MeshFilter>();
+        meshToUse = Application.isEditor ? meshFilter.sharedMesh : meshFilter.mesh;
+
+        octree = new OctreePoint<Vector3>(transform.position + (meshToUse.bounds.size / 2), cubeGrid.Size.x, MinimumSize);
     }
 
     private void OnDrawGizmos() {
-        Mesh meshToUse = Application.isEditor ? meshFilter.sharedMesh : meshFilter.mesh;
+        octree.Clear();
 
-        if (!meshToUse) {
+        if (!DrawGizmos) {
             return;
         }
 
         Vector3[] verts = meshToUse.vertices;
 
         Debug.Log("There are " + verts.Length + " vertices in the mesh");
-
-        octree = new OctreePoint<Vector3>(transform.position + (meshToUse.bounds.size / 2), cubeGrid.Size.x, MinimumSize);
 
         for (int vertIdx = 0; vertIdx < verts.Length; vertIdx++) {
             Vector3 vert = verts[vertIdx];

@@ -1,12 +1,13 @@
 using System;
+using codexhere.MarchingCubes.Naive.Behaviors;
 using UnityEngine;
 
 namespace codexhere.MarchingCubes.NoiseGen {
     [Serializable]
-    public class TwoD : INoiseGenerator {
+    public class TwoD : AbstractNoiseGenerator {
         public float age;
 
-        public float[] GenNoise(float[] previousValues, Vector2Int size, Vector3 offset, float scale, float octave) {
+        override public float[] GenNoise(float[] previousValues, Vector2Int size, Vector3 offset, float scale, float octave) {
             Vector2Int noiseSize = size + Vector2Int.one;
 
             for (int x = 0; x < noiseSize.x; x++) {
