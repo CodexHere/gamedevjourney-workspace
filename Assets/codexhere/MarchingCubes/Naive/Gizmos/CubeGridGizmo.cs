@@ -10,7 +10,6 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshCollider))]
     [RequireComponent(typeof(TwoDNoiseGeneratorBehavior))]
-    [RequireComponent(typeof(NormalizeHeightNoiseGeneratorBehavior))]
     public class CubeGridGizmo : MonoBehaviour {
 
         public Vector2Int GridSize;
@@ -66,7 +65,7 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
 
         private void OnDrawGizmos() {
             DrawOutline();
-            DrawCornerSpheres();
+            DrawVertexSpheres();
         }
 
         private void DrawOutline() {
@@ -94,7 +93,11 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
             UGizmos.DrawLine(transform.position + fwd + right, transform.position + up + fwd + right);
         }
 
-        private void DrawCornerSpheres() {
+        private void DrawVertexSpheres() {
+            if (null == noiseMap) {
+                return;
+            }
+
             for (int x = 0; x < (NoiseSize.x * NoiseSize.x * NoiseSize.y); x++) {
                 float val = noiseMap[x];
 

@@ -61,8 +61,9 @@ namespace codexhere.MarchingCubes.NoiseGen {
             for (int noiseIdx = 0; noiseIdx < noiseMap.Length; noiseIdx++) {
                 // Normalize for the octaves to keep within 0..1
                 noiseMap[noiseIdx] /= octaveSums;
-                // Normalize to height values
-                noiseMap[noiseIdx] = noiseMap[noiseIdx];
+                // Normalize to the Vertex position for IsoSurface evaluation while Marching
+                Vector3 vert = Utils.GetVertFromIndex(noiseIdx, NoiseSize);
+                noiseMap[noiseIdx] = vert.y - noiseMap[noiseIdx];
             }
 
             return noiseMap;
