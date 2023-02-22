@@ -35,17 +35,14 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
             System.Diagnostics.Stopwatch timer = new();
             timer.Start();
 
-            GenerateNoise();
+            noiseMap = noiseBuilder.BuildNoise(GridSize);
+
             GenerateMesh();
 
             timer.Stop();
             Debug.Log("CubeGridBehavior Render Time: " + timer.ElapsedMilliseconds);
 
             Refresh = false;
-        }
-
-        private void GenerateNoise() {
-            noiseMap = noiseBuilder.BuildNoise(GridSize);
         }
 
         private void GenerateMesh() {
