@@ -7,9 +7,8 @@ namespace codexhere.Util {
         public new Node RootNode { get; }
         public new int MaxDepth { get; protected set; }
 
-        public OctreeBounds(Vector3 position, float size, float minSize) : base(position, size, minSize) {
-            RootNode = new Node(position, size, minSize);
-        }
+        public OctreeBounds(Vector3 position, float size, float minSize) : base(position, size, minSize)
+            => RootNode = new Node(position, size, minSize);
 
         public List<Node> Insert(NodeDataType data, Vector3 lookPosition, Bounds bounds) {
             List<Node> insertedIntoNode = RootNode.Insert(data, lookPosition, bounds);

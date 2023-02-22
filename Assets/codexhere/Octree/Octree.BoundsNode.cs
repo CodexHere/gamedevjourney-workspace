@@ -35,7 +35,7 @@ namespace codexhere.Util {
 
             public List<Node> Insert(NodeDataType data, Vector3 addPosition, Bounds bounds) {
                 float smallestDimension = new float[] { bounds.size.x, bounds.size.y, bounds.size.z }.Min();
-                Bounds minBounds = new Bounds(addPosition, Vector3.one * smallestDimension);
+                Bounds minBounds = new(addPosition, Vector3.one * smallestDimension);
 
                 bool fitsWithinMe = minBounds.size.magnitude > (NodeBounds.size.magnitude / 2);
 
@@ -55,7 +55,7 @@ namespace codexhere.Util {
                     SubDivide();
                 }
 
-                List<Node> insertedNodes = new List<Node>();
+                List<Node> insertedNodes = new();
 
                 foreach (Node child in Children) {
                     if (child.Contains(bounds)) {

@@ -1,3 +1,4 @@
+using System.Linq;
 using codexhere.MarchingCubes.NoiseGen;
 using codexhere.MarchingCubes.NoiseGen.Behaviors;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshCollider))]
     [RequireComponent(typeof(TwoDNoiseGeneratorBehavior))]
+    [RequireComponent(typeof(NormalizeHeightNoiseGeneratorBehavior))]
     public class CubeGridGizmo : MonoBehaviour {
 
         public Vector2Int GridSize;
@@ -23,14 +25,12 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
         private MarchingCubes marcher;
         private MeshFilter meshFilter;
         private MeshCollider meshCollider;
-        private BaseNoiseGeneratorBehavior noiseGenerator;
 
         private void Awake() {
             Debug.Log("Initializing Marching Cubes Grid Gizmo");
 
             meshFilter = GetComponent<MeshFilter>();
             meshCollider = GetComponent<MeshCollider>();
-            noiseGenerator = GetComponent<BaseNoiseGeneratorBehavior>();
         }
 
         private void Update() {
@@ -40,9 +40,11 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
 
             Refresh = false;
 
-            NoiseBuilder builder = new NoiseBuilder(
-                new INoiseGenerator[] { noiseGenerator.Generator },
-                new NoiseBuilderOptions[] { noiseGenerator.Options },
+            BaseNoiseGeneratorBehavior[] noiseGenerators = GetComponents<BaseNoiseGeneratorBehavior>();
+
+            NoiseBuilder builder = new(
+                noiseGenerators.Select(n => n.Generator).ToArray(),
+                noiseGenerators.Select(n => n.Options).ToArray(),
                 GridSize
             );
 

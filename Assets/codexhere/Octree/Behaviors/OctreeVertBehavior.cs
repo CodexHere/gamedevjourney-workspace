@@ -35,7 +35,7 @@ public class OctreeVertBehavior : MonoBehaviour {
 
         for (int vertIdx = 0; vertIdx < verts.Length; vertIdx++) {
             Vector3 vert = verts[vertIdx];
-            octree.Insert(vert, vert);
+            _ = octree.Insert(vert, vert);
         }
 
         DrawNodes(octree.RootNode);

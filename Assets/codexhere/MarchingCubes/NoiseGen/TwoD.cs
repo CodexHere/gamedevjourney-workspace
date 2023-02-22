@@ -9,7 +9,7 @@ namespace codexhere.MarchingCubes.NoiseGen {
                 ((noisePos.z + options.Offset.z) / options.Scale) + 0.001f
             );
 
-            previousValue += noisePos.y - (gridSize.y * noiseValue);
+            previousValue += gridSize.y * noiseValue;
 
             return previousValue;
         }

@@ -1,5 +1,8 @@
 root = true
 
+# Language Rules Documentation
+# https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/language-rules
+
 [*.cs]
 csharp_new_line_before_open_brace = none
 csharp_new_line_before_catch = false
@@ -9,9 +12,27 @@ csharp_new_line_before_members_in_anonymous_types = false
 csharp_new_line_before_members_in_object_initializers = false
 csharp_new_line_between_query_expression_clauses = true
 
-# Ignore unused assignment errors
-# dotnet_diagnostic.IDE0058.severity = none
-# dotnet_diagnostic.IDE0059.severity = none
-# Disable errors about "new/Object initialization can be simplified"
-dotnet_diagnostic.IDE0090.severity = none
-dotnet_diagnostic.IDE0017.severity = none
+# Use object initializers
+dotnet_diagnostic.IDE0017.severity = error
+
+# Use conditional expression for assignment
+dotnet_diagnostic.IDE0045.severity = warning
+
+# Remove unnecessary expression value
+dotnet_diagnostic.IDE0058.severity = error
+
+# Remove unnecessary value assignment
+dotnet_diagnostic.IDE0059.severity = error
+
+# Remove unnecessary using directives (except for generated files)
+dotnet_diagnostic.IDE0005.severity = error
+dotnet_diagnostic.IDE0005_genIDE0005.severity = none
+
+# Use expression body for constructors
+dotnet_diagnostic.IDE0021.severity = warning
+csharp_style_expression_bodied_constructors = true
+
+# Use expression body for properties
+dotnet_diagnostic.IDE0025.severity = warning
+csharp_style_expression_bodied_properties = true
+

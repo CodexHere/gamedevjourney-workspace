@@ -23,11 +23,13 @@ public class OctreeGizmo : MonoBehaviour {
             Renderer renderer = NodePositions[nodeIdx].GetComponent<Renderer>();
             _ = octreePoint.Insert(nodeIdx + 1, NodePositions[nodeIdx].position);
 
+#pragma warning disable IDE0045
             if (renderer) {
-                octreeBounds.Insert(nodeIdx + 1, NodePositions[nodeIdx].position, NodePositions[nodeIdx].GetComponent<Renderer>().bounds);
+                _ = octreeBounds.Insert(nodeIdx + 1, NodePositions[nodeIdx].position, NodePositions[nodeIdx].GetComponent<Renderer>().bounds);
             } else {
                 throw new Exception(NodePositions[nodeIdx].name + " doesn't have a Renderer, please add one to calculate");
             }
+#pragma warning restore IDE0045
         }
 
         if (UseBounds) {

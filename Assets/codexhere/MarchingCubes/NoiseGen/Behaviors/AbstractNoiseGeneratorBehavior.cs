@@ -4,7 +4,7 @@ namespace codexhere.MarchingCubes.NoiseGen.Behaviors {
 
     public class BaseNoiseGeneratorBehavior : MonoBehaviour {
         public NoiseBuilderOptions Options;
-        public INoiseGenerator Generator { get => _generator; }
+        public INoiseGenerator Generator => _generator;
 
         protected INoiseGenerator _generator;
     }

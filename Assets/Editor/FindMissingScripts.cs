@@ -7,12 +7,12 @@ using UnityEngine.SceneManagement;
 
 public class SelectGameObjectsWithMissingScripts : Editor {
     [MenuItem("CodexHere/Utils/Find GameObjects Missing Scripts")]
-    static void SelectGameObjects() {
+    private static void SelectGameObjects() {
         //Get the current scene and all top-level GameObjects in the scene hierarchy
         Scene currentScene = SceneManager.GetActiveScene();
         GameObject[] rootObjects = currentScene.GetRootGameObjects();
 
-        List<Object> objectsWithDeadLinks = new List<Object>();
+        List<Object> objectsWithDeadLinks = new();
         foreach (GameObject g in rootObjects) {
             //Get all components on the GameObject, then loop through them 
             Component[] components = g.GetComponents<Component>();

@@ -18,7 +18,7 @@ namespace codexhere.MarchingCubes.NoiseGen {
         private readonly NoiseBuilderOptions[] noiseBuildOptions;
         private readonly Vector2Int gridSize;
 
-        private Vector2Int NoiseSize { get => gridSize + Vector2Int.one; }
+        private Vector2Int NoiseSize => gridSize + Vector2Int.one;
 
         public NoiseBuilder(INoiseGenerator[] noiseGenerators, NoiseBuilderOptions[] noiseBuildOptions, Vector2Int gridSize)
             => (this.noiseGenerators, this.noiseBuildOptions, this.gridSize) = (noiseGenerators, noiseBuildOptions, gridSize);
@@ -26,7 +26,7 @@ namespace codexhere.MarchingCubes.NoiseGen {
         public float[] BuildNoise() {
             float[] noiseMap = GenerateNoise();
 
-            // noiseMap = NormalizeNoise(noiseMap);
+            noiseMap = NormalizeNoise(noiseMap);
 
             return noiseMap;
         }
@@ -38,7 +38,7 @@ namespace codexhere.MarchingCubes.NoiseGen {
                 for (int y = 0; y < NoiseSize.y; y++) {
                     for (int z = 0; z < NoiseSize.x; z++) {
                         // Build point definitions for where we are in our XYZ Grid Space
-                        Vector3 noisePos = new Vector3(x, y, z);
+                        Vector3 noisePos = new(x, y, z);
                         int noiseIdx = Utils.GetIndexFromVert(noisePos, NoiseSize);
 
                         // Iterate over INoiseGenerator implementations and generate the final noise value for every point in Grid Space

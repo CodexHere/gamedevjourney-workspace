@@ -6,11 +6,11 @@ namespace codexhere.MarchingCubes.Naive {
         public Vector3 Origin { get; }
         public Vector2Int GridSize { get; }
 
-        private readonly Mesh mesh = new Mesh();
+        private readonly Mesh mesh = new();
         private readonly float IsoSurfaceLevel;
         private readonly bool Smooth;
-        private List<int> triangles = new List<int>();
-        private List<Vector3> vertices = new List<Vector3>();
+        private List<int> triangles = new();
+        private List<Vector3> vertices = new();
 
         private Vector2Int NoiseSize => GridSize + Vector2Int.one;
 
@@ -40,7 +40,7 @@ namespace codexhere.MarchingCubes.Naive {
             for (int x = 0; x < GridSize.x; x++) {
                 for (int y = 0; y < GridSize.y; y++) {
                     for (int z = 0; z < GridSize.x; z++) {
-                        Vector3 cubePosition = new Vector3(x, y, z);
+                        Vector3 cubePosition = new(x, y, z);
                         float[] cubeData = BuildCubeData(cubePosition, noiseMap);
                         int cubeConfigIdx = GetCubeConfigIndex(cubeData);
 

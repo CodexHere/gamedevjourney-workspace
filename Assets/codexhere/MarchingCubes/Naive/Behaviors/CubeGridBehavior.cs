@@ -7,7 +7,7 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshCollider))]
     public class CubeGridBehavior : MonoBehaviour {
-        public Vector2Int GridSize = new Vector2Int(8, 4);
+        public Vector2Int GridSize = new(8, 4);
 
         [SerializeField] private float IsoSurfaceLevel = 0.5f;
         [SerializeField] private bool Smooth;
@@ -32,7 +32,7 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
                 return;
             }
 
-            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+            System.Diagnostics.Stopwatch timer = new();
             timer.Start();
 
             GenerateNoise();
