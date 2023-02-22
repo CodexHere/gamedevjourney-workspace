@@ -1,31 +1,17 @@
-using System;
-using codexhere.MarchingCubes.Naive.Behaviors;
 using UnityEngine;
 
 namespace codexhere.MarchingCubes.NoiseGen {
-    [Serializable]
-    public class TwoD : AbstractNoiseGenerator {
-        public float age;
 
-        override public float[] GenNoise(float[] previousValues, Vector2Int size, Vector3 offset, float scale, float octave) {
-            Vector2Int noiseSize = size + Vector2Int.one;
+    public class TwoD : INoiseGenerator {
+        public float GenNoise(float previousValue, Vector3 noisePos, Vector2Int gridSize, NoiseBuilderOptions options) {
+            float noiseValue = options.Octave * Mathf.PerlinNoise(
+                ((noisePos.x + options.Offset.x) / options.Scale) + 0.001f,
+                ((noisePos.z + options.Offset.z) / options.Scale) + 0.001f
+            );
 
-            for (int x = 0; x < noiseSize.x; x++) {
-                for (int y = 0; y < noiseSize.y; y++) {
-                    for (int z = 0; z < noiseSize.x; z++) {
-                        int idx = Utils.GetIndexFromVert(new Vector3(x, y, z), noiseSize);
+            previousValue += noisePos.y - (gridSize.y * noiseValue);
 
-                        float noiseValue = octave * Mathf.PerlinNoise(
-                            ((x + offset.x) / scale) + 0.001f,
-                            ((z + offset.z) / scale) + 0.001f
-                        );
-
-                        previousValues[idx] = previousValues[idx] + y - (noiseSize.y * noiseValue);
-                    }
-                }
-            }
-
-            return previousValues;
+            return previousValue;
         }
     }
 }

@@ -19,7 +19,7 @@ public class OctreeVertBehavior : MonoBehaviour {
         cubeGrid = GetComponent<CubeGridBehavior>();
         meshToUse = Application.isEditor ? meshFilter.sharedMesh : meshFilter.mesh;
 
-        octree = new OctreePoint<Vector3>(transform.position + (meshToUse.bounds.size / 2), cubeGrid.Size.x, MinimumSize);
+        octree = new OctreePoint<Vector3>(transform.position + (meshToUse.bounds.size / 2), cubeGrid.GridSize.x, MinimumSize);
     }
 
     private void OnDrawGizmos() {

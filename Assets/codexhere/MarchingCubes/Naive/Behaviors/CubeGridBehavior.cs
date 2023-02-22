@@ -1,5 +1,4 @@
-using System;
-using codexhere.MarchingCubes.NoiseGen;
+using codexhere.MarchingCubes.NoiseGen.Behaviors;
 using UnityEngine;
 
 namespace codexhere.MarchingCubes.Naive.Behaviors {
@@ -8,15 +7,14 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshCollider))]
     public class CubeGridBehavior : MonoBehaviour {
-        public Vector2Int Size = new Vector2Int(8, 4);
+        public Vector2Int GridSize = new Vector2Int(8, 4);
 
         [SerializeField] private float IsoSurfaceLevel = 0.5f;
         [SerializeField] private bool Smooth;
         [SerializeField] private bool Live;
         [SerializeField] private bool Refresh;
+        [SerializeField] private NoiseBuilderBehavior noiseBuilder;
 
-        [SerializeReference]
-        private AbstractNoiseGenerator[] noiseGeneratorList = new AbstractNoiseGenerator[] { new TwoD() };
         private float[] noiseMap;
         private MarchingCubes marcher;
         private MeshFilter meshFilter;
@@ -30,7 +28,7 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
         }
 
         private void Update() {
-            if (!Live && Refresh == false) {
+            if (!Live && !Refresh) {
                 return;
             }
 
@@ -47,21 +45,11 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
         }
 
         private void GenerateNoise() {
-            // noiseGeneratorList = GetComponents<AbstractNoiseGenerator>();
-
-            if (0 == noiseGeneratorList.Length) {
-                throw new Exception("There needs to be at least 1 Noise Generator applied to the GameObject: " + name);
-            }
-
-            noiseMap = new float[(Size.x + 1) * (Size.y + 1) * (Size.x + 1)];
-
-            for (int noiseIdx = 0; noiseIdx < noiseGeneratorList.Length; noiseIdx++) {
-                noiseMap = noiseGeneratorList[noiseIdx].GenNoise(noiseMap, Size, Vector2.one, 13f, 1);
-            }
+            noiseMap = noiseBuilder.BuildNoise(GridSize);
         }
 
         private void GenerateMesh() {
-            marcher = new MarchingCubes(transform.position, Size, IsoSurfaceLevel, Smooth);
+            marcher = new MarchingCubes(transform.position, GridSize, IsoSurfaceLevel, Smooth);
             marcher.ClearMesh();
             marcher.MarchNoise(noiseMap);
 

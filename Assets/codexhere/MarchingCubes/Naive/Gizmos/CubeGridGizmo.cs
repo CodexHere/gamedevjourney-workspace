@@ -1,4 +1,5 @@
 using codexhere.MarchingCubes.NoiseGen;
+using codexhere.MarchingCubes.NoiseGen.Behaviors;
 using UnityEngine;
 using UGizmos = UnityEngine.Gizmos;
 
@@ -7,43 +8,46 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
     [ExecuteInEditMode]
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshCollider))]
+    [RequireComponent(typeof(TwoDNoiseGeneratorBehavior))]
     public class CubeGridGizmo : MonoBehaviour {
-        public Vector2Int Size = new Vector2Int(8, 4);
 
-        public float Scale = 24f;
+        public Vector2Int GridSize;
         public float IsoSurfaceLevel = 0.5f;
-        public Vector3 offset;
         public bool Smooth = false;
-        private float settingsCacheVal; // Junk just to gate updating unless user changes a value
-        private float settingsVal = -1;
+        public bool Live = false;
+        public bool Refresh = false;
 
-        private Vector2Int NoiseSize => Size + Vector2Int.one;
+        private Vector2Int NoiseSize => GridSize + Vector2Int.one;
 
         private float[] noiseMap;
         private MarchingCubes marcher;
         private MeshFilter meshFilter;
         private MeshCollider meshCollider;
+        private BaseNoiseGeneratorBehavior noiseGenerator;
 
         private void Awake() {
             Debug.Log("Initializing Marching Cubes Grid Gizmo");
 
             meshFilter = GetComponent<MeshFilter>();
             meshCollider = GetComponent<MeshCollider>();
+            noiseGenerator = GetComponent<BaseNoiseGeneratorBehavior>();
         }
 
         private void Update() {
-            settingsVal = Size.magnitude + IsoSurfaceLevel + Scale + offset.magnitude + (Smooth ? 1 : -1);
-
-            if (settingsCacheVal == settingsVal) {
+            if (!Live && !Refresh) {
                 return;
             }
 
-            settingsCacheVal = settingsVal;
+            Refresh = false;
 
-            float[] startMap = new float[(Size.x + 1) * (Size.y + 1) * (Size.x + 1)];
+            NoiseBuilder builder = new NoiseBuilder(
+                new INoiseGenerator[] { noiseGenerator.Generator },
+                new NoiseBuilderOptions[] { noiseGenerator.Options },
+                GridSize
+            );
 
-            noiseMap = new TwoD().GenNoise(startMap, Size, offset, Scale, 1);
-            marcher = new MarchingCubes(transform.position, Size, IsoSurfaceLevel, Smooth);
+            noiseMap = builder.BuildNoise();
+            marcher = new MarchingCubes(transform.position, GridSize, IsoSurfaceLevel, Smooth);
             marcher.ClearMesh();
             marcher.MarchNoise(noiseMap);
 
@@ -65,9 +69,9 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
 
         private void DrawOutline() {
             UGizmos.color = Color.gray;
-            Vector3 up = Vector3.up * Size.y;
-            Vector3 fwd = Vector3.forward * Size.x;
-            Vector3 right = Vector3.right * Size.x;
+            Vector3 up = Vector3.up * GridSize.y;
+            Vector3 fwd = Vector3.forward * GridSize.x;
+            Vector3 right = Vector3.right * GridSize.x;
 
             // Bottom Rect
             UGizmos.DrawLine(transform.position, transform.position + fwd);

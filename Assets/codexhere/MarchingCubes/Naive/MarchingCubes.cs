@@ -4,7 +4,7 @@ using UnityEngine;
 namespace codexhere.MarchingCubes.Naive {
     public class MarchingCubes {
         public Vector3 Origin { get; }
-        public Vector2Int Size { get; }
+        public Vector2Int GridSize { get; }
 
         private readonly Mesh mesh = new Mesh();
         private readonly float IsoSurfaceLevel;
@@ -12,11 +12,11 @@ namespace codexhere.MarchingCubes.Naive {
         private List<int> triangles = new List<int>();
         private List<Vector3> vertices = new List<Vector3>();
 
-        private Vector2Int NoiseSize => Size + Vector2Int.one;
+        private Vector2Int NoiseSize => GridSize + Vector2Int.one;
 
         public MarchingCubes(Vector3 origin, Vector2Int size, float isoSurfaceLevel, bool smooth) {
             Origin = origin;
-            Size = size;
+            GridSize = size;
             IsoSurfaceLevel = isoSurfaceLevel;
             Smooth = smooth;
         }
@@ -37,9 +37,9 @@ namespace codexhere.MarchingCubes.Naive {
         }
 
         public void MarchNoise(float[] noiseMap) {
-            for (int x = 0; x < Size.x; x++) {
-                for (int y = 0; y < Size.y; y++) {
-                    for (int z = 0; z < Size.x; z++) {
+            for (int x = 0; x < GridSize.x; x++) {
+                for (int y = 0; y < GridSize.y; y++) {
+                    for (int z = 0; z < GridSize.x; z++) {
                         Vector3 cubePosition = new Vector3(x, y, z);
                         float[] cubeData = BuildCubeData(cubePosition, noiseMap);
                         int cubeConfigIdx = GetCubeConfigIndex(cubeData);
