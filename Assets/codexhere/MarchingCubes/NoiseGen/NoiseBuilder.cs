@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace codexhere.MarchingCubes.NoiseGen {
@@ -23,15 +24,16 @@ namespace codexhere.MarchingCubes.NoiseGen {
         public NoiseBuilder(INoiseGenerator[] noiseGenerators, NoiseBuilderOptions[] noiseBuildOptions, Vector2Int gridSize)
             => (this.noiseGenerators, this.noiseBuildOptions, this.gridSize) = (noiseGenerators, noiseBuildOptions, gridSize);
 
-        public float[] BuildNoise() {
-            float[] noiseMap = GenerateNoise();
+        public async Task<float[]> BuildNoise() {
+            float[] noiseMap = await GenerateNoise();
 
-            noiseMap = NormalizeNoise(noiseMap);
+            noiseMap = await NormalizeNoise(noiseMap);
 
             return noiseMap;
         }
 
-        private float[] GenerateNoise() {
+        private async Task<float[]> GenerateNoise() {
+
             float[] noiseMap = new float[NoiseSize.x * NoiseSize.y * NoiseSize.x];
 
             for (int x = 0; x < NoiseSize.x; x++) {
@@ -47,6 +49,8 @@ namespace codexhere.MarchingCubes.NoiseGen {
                             NoiseBuilderOptions options = noiseBuildOptions[noiseGenIdx];
 
                             noiseMap[noiseIdx] = generator.GenNoise(noiseMap[noiseIdx], noisePos, gridSize, options);
+                            await Task.Delay(0);
+
                         }
                     }
                 }
@@ -55,7 +59,9 @@ namespace codexhere.MarchingCubes.NoiseGen {
             return noiseMap;
         }
 
-        private float[] NormalizeNoise(float[] noiseMap) {
+        private async Task<float[]> NormalizeNoise(float[] noiseMap) {
+            await Task.Yield();
+
             float octaveSums = noiseBuildOptions.Sum(noiseBuildOptions => noiseBuildOptions.Octave);
 
             for (int noiseIdx = 0; noiseIdx < noiseMap.Length; noiseIdx++) {

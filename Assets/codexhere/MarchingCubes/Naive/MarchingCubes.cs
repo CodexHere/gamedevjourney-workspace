@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace codexhere.MarchingCubes.Naive {
@@ -26,7 +27,9 @@ namespace codexhere.MarchingCubes.Naive {
             triangles.Clear();
         }
 
-        public Mesh BuildMesh() {
+        public async Task<Mesh> BuildMesh() {
+            await Task.Yield();
+
             mesh.Clear();
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             mesh.vertices = vertices.ToArray();
@@ -36,7 +39,9 @@ namespace codexhere.MarchingCubes.Naive {
             return mesh;
         }
 
-        public void MarchNoise(float[] noiseMap) {
+        public async Task MarchNoise(float[] noiseMap) {
+            await Task.Yield();
+
             for (int x = 0; x < GridSize.x; x++) {
                 for (int y = 0; y < GridSize.y; y++) {
                     for (int z = 0; z < GridSize.x; z++) {

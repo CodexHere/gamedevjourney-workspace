@@ -1,9 +1,10 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace codexhere.MarchingCubes.NoiseGen.Behaviors {
     public class NoiseBuilderBehavior : MonoBehaviour {
-        public float[] BuildNoise(Vector2Int gridSize) {
+        public async Task<float[]> BuildNoise(Vector2Int gridSize) {
             BaseNoiseGeneratorBehavior[] noiseGeneratorList = GetComponents<BaseNoiseGeneratorBehavior>();
 
             if (0 == noiseGeneratorList.Length) {
@@ -30,7 +31,7 @@ namespace codexhere.MarchingCubes.NoiseGen.Behaviors {
                 throw new Exception("There needs to be at least 1 Noise Generator Enabled on the GameObject: " + name);
             }
 
-            return new NoiseBuilder(generators, builderOptions, gridSize).BuildNoise();
+            return await new NoiseBuilder(generators, builderOptions, gridSize).BuildNoise();
         }
     }
 }

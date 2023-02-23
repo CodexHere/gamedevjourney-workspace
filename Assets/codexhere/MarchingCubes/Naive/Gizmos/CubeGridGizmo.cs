@@ -32,7 +32,7 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
             meshCollider = GetComponent<MeshCollider>();
         }
 
-        private void Update() {
+        private async void Update() {
             if (!Live && !Refresh) {
                 return;
             }
@@ -47,12 +47,12 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
                 GridSize
             );
 
-            noiseMap = builder.BuildNoise();
+            noiseMap = await builder.BuildNoise();
             marcher = new MarchingCubes(transform.position, GridSize, IsoSurfaceLevel, Smooth);
             marcher.ClearMesh();
-            marcher.MarchNoise(noiseMap);
+            await marcher.MarchNoise(noiseMap);
 
-            Mesh mesh = marcher.BuildMesh();
+            Mesh mesh = await marcher.BuildMesh();
 
             if (Application.isEditor) {
                 meshFilter.sharedMesh = mesh;

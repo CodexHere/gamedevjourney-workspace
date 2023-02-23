@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using codexhere.MarchingCubes.NoiseGen.Behaviors;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
         [SerializeField] private bool Live;
         [SerializeField] private bool Refresh;
         [SerializeField] private NoiseBuilderBehavior noiseBuilder;
+        private Task task_Noise;
 
         private float[] noiseMap;
         private MarchingCubes marcher;
@@ -28,29 +30,50 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
         }
 
         private void Update() {
+            if (null != task_Noise && false == task_Noise.IsCompleted) {
+                Debug.Log("Running Task, skipping");
+                return;
+            }
+
             if (!Live && !Refresh) {
                 return;
             }
 
+            Debug.Log("Starting new Task...");
+
             System.Diagnostics.Stopwatch timer = new();
             timer.Start();
 
-            noiseMap = noiseBuilder.BuildNoise(GridSize);
-
-            GenerateMesh();
-
-            timer.Stop();
-            Debug.Log("CubeGridBehavior Render Time: " + timer.ElapsedMilliseconds);
+            task_Noise = GenerateNoiseAndMesh();
+            _ = task_Noise.ConfigureAwait(false);
 
             Refresh = false;
+            timer.Stop();
+            Debug.Log("CubeGridBehavior Render Time: " + timer.ElapsedMilliseconds);
         }
 
-        private void GenerateMesh() {
+        private async Task GenerateNoiseAndMesh() {
+            System.Diagnostics.Stopwatch timer = new();
+            timer.Start();
+
+            Debug.Log("Starting Noise Gen: " + timer.ElapsedMilliseconds);
+            noiseMap = await noiseBuilder.BuildNoise(GridSize);
+            Debug.Log("Ended Noise Gen: " + timer.ElapsedMilliseconds);
+
+            timer.Restart();
+            Debug.Log("Starting Mesh Gen: " + timer.ElapsedMilliseconds);
+            await GenerateMesh();
+            Debug.Log("Ended Mesh Gen: " + timer.ElapsedMilliseconds);
+
+            timer.Stop();
+        }
+
+        private async Task GenerateMesh() {
             marcher = new MarchingCubes(transform.position, GridSize, IsoSurfaceLevel, Smooth);
             marcher.ClearMesh();
-            marcher.MarchNoise(noiseMap);
+            await marcher.MarchNoise(noiseMap);
 
-            Mesh mesh = marcher.BuildMesh();
+            Mesh mesh = await marcher.BuildMesh();
 
             if (Application.isEditor) {
                 meshFilter.sharedMesh = mesh;
