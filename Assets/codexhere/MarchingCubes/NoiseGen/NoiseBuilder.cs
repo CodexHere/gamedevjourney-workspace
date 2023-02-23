@@ -15,6 +15,8 @@ namespace codexhere.MarchingCubes.NoiseGen {
     }
 
     public class NoiseBuilder {
+        public int YieldDivisor = 25_000;
+
         private readonly INoiseGenerator[] noiseGenerators;
         private readonly NoiseBuilderOptions[] noiseBuildOptions;
         private readonly Vector2Int gridSize;
@@ -33,7 +35,6 @@ namespace codexhere.MarchingCubes.NoiseGen {
         }
 
         private async Task<float[]> GenerateNoise() {
-
             float[] noiseMap = new float[NoiseSize.x * NoiseSize.y * NoiseSize.x];
 
             for (int x = 0; x < NoiseSize.x; x++) {
@@ -49,8 +50,10 @@ namespace codexhere.MarchingCubes.NoiseGen {
                             NoiseBuilderOptions options = noiseBuildOptions[noiseGenIdx];
 
                             noiseMap[noiseIdx] = generator.GenNoise(noiseMap[noiseIdx], noisePos, gridSize, options);
-                            await Task.Delay(0);
+                        }
 
+                        if (0 == (noiseIdx % YieldDivisor)) {
+                            await Task.Yield();
                         }
                     }
                 }

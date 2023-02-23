@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace codexhere.MarchingCubes.Naive {
     public class MarchingCubes {
+        public int YieldDivisor = 500;
+
         public Vector3 Origin { get; }
         public Vector2Int GridSize { get; }
 
@@ -27,9 +29,7 @@ namespace codexhere.MarchingCubes.Naive {
             triangles.Clear();
         }
 
-        public async Task<Mesh> BuildMesh() {
-            await Task.Yield();
-
+        public Mesh BuildMesh() {
             mesh.Clear();
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             mesh.vertices = vertices.ToArray();
@@ -40,16 +40,20 @@ namespace codexhere.MarchingCubes.Naive {
         }
 
         public async Task MarchNoise(float[] noiseMap) {
-            await Task.Yield();
-
             for (int x = 0; x < GridSize.x; x++) {
                 for (int y = 0; y < GridSize.y; y++) {
                     for (int z = 0; z < GridSize.x; z++) {
                         Vector3 cubePosition = new(x, y, z);
+                        int cubeVertIdx = Utils.GetIndexFromVert(cubePosition, GridSize);
+
                         float[] cubeData = BuildCubeData(cubePosition, noiseMap);
                         int cubeConfigIdx = GetCubeConfigIndex(cubeData);
 
                         AddCubeToMeshData(cubePosition, cubeConfigIdx, cubeData, IsoSurfaceLevel, Smooth, ref vertices, ref triangles);
+
+                        if (0 == (cubeVertIdx % YieldDivisor)) {
+                            await Task.Yield();
+                        }
                     }
                 }
             }

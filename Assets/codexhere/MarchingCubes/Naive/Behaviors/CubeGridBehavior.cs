@@ -15,7 +15,7 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
         [SerializeField] private bool Live;
         [SerializeField] private bool Refresh;
         [SerializeField] private NoiseBuilderBehavior noiseBuilder;
-        private Task task_Noise;
+        private Task task_Generate;
 
         private float[] noiseMap;
         private MarchingCubes marcher;
@@ -29,8 +29,8 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
             meshCollider = GetComponent<MeshCollider>();
         }
 
-        private void Update() {
-            if (null != task_Noise && false == task_Noise.IsCompleted) {
+        private async void Update() {
+            if (null != task_Generate && false == task_Generate.IsCompleted) {
                 Debug.Log("Running Task, skipping");
                 return;
             }
@@ -39,24 +39,24 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
                 return;
             }
 
-            Debug.Log("Starting new Task...");
-
             System.Diagnostics.Stopwatch timer = new();
             timer.Start();
+            Debug.Log("Starting new Task...");
 
-            task_Noise = GenerateNoiseAndMesh();
-            _ = task_Noise.ConfigureAwait(false);
+            task_Generate = GenerateNoiseAndMesh();
+            await task_Generate;
 
             Refresh = false;
+
             timer.Stop();
-            Debug.Log("CubeGridBehavior Render Time: " + timer.ElapsedMilliseconds);
+            Debug.LogFormat("CubeGridBehavior Render Time: {0}", timer.Elapsed.TotalSeconds);
         }
 
         private async Task GenerateNoiseAndMesh() {
             System.Diagnostics.Stopwatch timer = new();
             timer.Start();
 
-            Debug.Log("Starting Noise Gen: " + timer.ElapsedMilliseconds);
+            Debug.Log("Starting Noise Gen:  " + timer.ElapsedMilliseconds);
             noiseMap = await noiseBuilder.BuildNoise(GridSize);
             Debug.Log("Ended Noise Gen: " + timer.ElapsedMilliseconds);
 
@@ -73,7 +73,9 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
             marcher.ClearMesh();
             await marcher.MarchNoise(noiseMap);
 
-            Mesh mesh = await marcher.BuildMesh();
+            await Task.Yield();
+
+            Mesh mesh = marcher.BuildMesh();
 
             if (Application.isEditor) {
                 meshFilter.sharedMesh = mesh;

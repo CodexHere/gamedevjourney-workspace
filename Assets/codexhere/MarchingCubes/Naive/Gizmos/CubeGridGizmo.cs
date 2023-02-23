@@ -52,7 +52,7 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
             marcher.ClearMesh();
             await marcher.MarchNoise(noiseMap);
 
-            Mesh mesh = await marcher.BuildMesh();
+            Mesh mesh = marcher.BuildMesh();
 
             if (Application.isEditor) {
                 meshFilter.sharedMesh = mesh;
