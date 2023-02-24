@@ -1,10 +1,16 @@
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace codexhere.MarchingCubes.Naive {
     public class MarchingCubes {
-        public int YieldDivisor = 500;
+
+        public event EventHandler<int> OnCubeProcessed;
+        public event EventHandler OnMarchingCompleted;
+
+        public int YieldDivisor = 100;
 
         public Vector3 Origin { get; }
         public Vector2Int GridSize { get; }
@@ -39,10 +45,14 @@ namespace codexhere.MarchingCubes.Naive {
             return mesh;
         }
 
-        public async Task MarchNoise(float[] noiseMap) {
+        public async Task MarchNoise(CancellationToken cancellationToken, float[] noiseMap) {
             for (int x = 0; x < GridSize.x; x++) {
                 for (int y = 0; y < GridSize.y; y++) {
                     for (int z = 0; z < GridSize.x; z++) {
+                        if (cancellationToken.IsCancellationRequested) {
+                            return;
+                        }
+
                         Vector3 cubePosition = new(x, y, z);
                         int cubeVertIdx = Utils.GetIndexFromVert(cubePosition, GridSize);
 
@@ -51,12 +61,16 @@ namespace codexhere.MarchingCubes.Naive {
 
                         AddCubeToMeshData(cubePosition, cubeConfigIdx, cubeData, IsoSurfaceLevel, Smooth, ref vertices, ref triangles);
 
+                        OnCubeProcessed?.Invoke(this, cubeVertIdx);
+
                         if (0 == (cubeVertIdx % YieldDivisor)) {
                             await Task.Yield();
                         }
                     }
                 }
             }
+
+            OnMarchingCompleted?.Invoke(this, EventArgs.Empty);
         }
 
         private int GetCubeConfigIndex(float[] cubeData) {

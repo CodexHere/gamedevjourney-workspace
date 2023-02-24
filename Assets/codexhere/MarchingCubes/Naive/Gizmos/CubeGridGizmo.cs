@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading;
 using codexhere.MarchingCubes.NoiseGen;
 using codexhere.MarchingCubes.NoiseGen.Behaviors;
 using UnityEngine;
@@ -50,7 +51,7 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
             noiseMap = await builder.BuildNoise();
             marcher = new MarchingCubes(transform.position, GridSize, IsoSurfaceLevel, Smooth);
             marcher.ClearMesh();
-            await marcher.MarchNoise(noiseMap);
+            await marcher.MarchNoise(new CancellationToken(), noiseMap);
 
             Mesh mesh = marcher.BuildMesh();
 

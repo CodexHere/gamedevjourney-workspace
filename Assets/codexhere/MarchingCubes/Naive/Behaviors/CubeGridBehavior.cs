@@ -1,5 +1,8 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using codexhere.MarchingCubes.NoiseGen.Behaviors;
+using codexhere.UI;
 using UnityEngine;
 
 namespace codexhere.MarchingCubes.Naive.Behaviors {
@@ -15,12 +18,14 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
         [SerializeField] private bool Live;
         [SerializeField] private bool Refresh;
         [SerializeField] private NoiseBuilderBehavior noiseBuilder;
-        private Task task_Generate;
+        [SerializeField] private LoadingBarBehavior progressBar;
+        [SerializeField] private Rigidbody characterController;
 
+        private Task task_Generate;
         private float[] noiseMap;
-        private MarchingCubes marcher;
         private MeshFilter meshFilter;
         private MeshCollider meshCollider;
+        readonly CancellationTokenSource cancellationTokenSrc = new();
 
         private void Awake() {
             Debug.Log("Initializing Marching Cubes Grid Behavior");
@@ -29,15 +34,22 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
             meshCollider = GetComponent<MeshCollider>();
         }
 
+        private void OnDestroy() {
+            cancellationTokenSrc.Cancel();
+        }
+
         private async void Update() {
-            if (null != task_Generate && false == task_Generate.IsCompleted) {
-                Debug.Log("Running Task, skipping");
+            bool firstTimeRunMode = Application.isPlaying && null == task_Generate;
+            bool taskProcessing = null != task_Generate && !task_Generate.IsCompleted;
+            bool forcedProcess = Live || Refresh;
+
+            if (!firstTimeRunMode && (taskProcessing || !forcedProcess)) {
                 return;
             }
 
-            if (!Live && !Refresh) {
-                return;
-            }
+            Refresh = false;
+
+            progressBar.FadeTo(1);
 
             System.Diagnostics.Stopwatch timer = new();
             timer.Start();
@@ -45,8 +57,6 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
 
             task_Generate = GenerateNoiseAndMesh();
             await task_Generate;
-
-            Refresh = false;
 
             timer.Stop();
             Debug.LogFormat("CubeGridBehavior Render Time: {0}", timer.Elapsed.TotalSeconds);
@@ -56,24 +66,38 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
             System.Diagnostics.Stopwatch timer = new();
             timer.Start();
 
-            Debug.Log("Starting Noise Gen:  " + timer.ElapsedMilliseconds);
             noiseMap = await noiseBuilder.BuildNoise(GridSize);
-            Debug.Log("Ended Noise Gen: " + timer.ElapsedMilliseconds);
+            Debug.Log("Noise Gen: " + timer.ElapsedMilliseconds);
 
             timer.Restart();
-            Debug.Log("Starting Mesh Gen: " + timer.ElapsedMilliseconds);
             await GenerateMesh();
-            Debug.Log("Ended Mesh Gen: " + timer.ElapsedMilliseconds);
+
+            if (cancellationTokenSrc.IsCancellationRequested) {
+                Debug.Log("Mesh Gen Cancelled");
+            } else {
+                Debug.Log($"Mesh Gen: {timer.ElapsedMilliseconds}");
+            }
 
             timer.Stop();
         }
 
         private async Task GenerateMesh() {
-            marcher = new MarchingCubes(transform.position, GridSize, IsoSurfaceLevel, Smooth);
-            marcher.ClearMesh();
-            await marcher.MarchNoise(noiseMap);
+            int totalVerts = GridSize.x * GridSize.x * GridSize.y - 1;
+            MarchingCubes marcher = new(transform.position, GridSize, IsoSurfaceLevel, Smooth);
 
-            await Task.Yield();
+            // Events from the Marcher
+            marcher.OnCubeProcessed += (object sender, int cubeNum) => progressBar.Percentage = cubeNum / (float)totalVerts * 100;
+            marcher.OnMarchingCompleted += (object sender, EventArgs e) => {
+                progressBar.FadeTo(0, 0.5f);
+                characterController.useGravity = true;
+            };
+
+            marcher.ClearMesh();
+            await marcher.MarchNoise(cancellationTokenSrc.Token, noiseMap);
+
+            if (cancellationTokenSrc.IsCancellationRequested) {
+                return;
+            }
 
             Mesh mesh = marcher.BuildMesh();
 
@@ -85,6 +109,5 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
 
             meshCollider.sharedMesh = mesh;
         }
-
     }
 }
