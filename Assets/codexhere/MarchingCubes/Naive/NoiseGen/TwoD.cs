@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace codexhere.MarchingCubes.NoiseGen {
+namespace codexhere.MarchingCubes.NoiseGen.Naive {
 
     public class TwoD : INoiseGenerator {
         public float GenNoise(float previousValue, Vector3 noisePos, Vector2Int gridSize, NoiseBuilderOptions options) {

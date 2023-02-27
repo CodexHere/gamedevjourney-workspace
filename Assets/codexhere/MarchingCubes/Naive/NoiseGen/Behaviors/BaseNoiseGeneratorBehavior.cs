@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace codexhere.MarchingCubes.NoiseGen.Behaviors {
+namespace codexhere.MarchingCubes.NoiseGen.Naive.Behaviors {
 
     public class BaseNoiseGeneratorBehavior : MonoBehaviour {
         public bool Enabled;

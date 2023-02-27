@@ -1,9 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using codexhere.MarchingCubes.NoiseGen.Behaviors;
+using codexhere.MarchingCubes.NoiseGen.Naive.Behaviors;
 using codexhere.UI;
 using UnityEngine;
+using MSSystem = System;
 
 namespace codexhere.MarchingCubes.Naive.Behaviors {
 
@@ -51,7 +52,7 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
 
             progressBar.FadeTo(1);
 
-            System.Diagnostics.Stopwatch timer = new();
+            MSSystem.Diagnostics.Stopwatch timer = new();
             timer.Start();
             Debug.Log("Starting new Task...");
 
@@ -63,7 +64,7 @@ namespace codexhere.MarchingCubes.Naive.Behaviors {
         }
 
         private async Task GenerateNoiseAndMesh() {
-            System.Diagnostics.Stopwatch timer = new();
+            MSSystem.Diagnostics.Stopwatch timer = new();
             timer.Start();
 
             noiseMap = await noiseBuilder.BuildNoise(GridSize);

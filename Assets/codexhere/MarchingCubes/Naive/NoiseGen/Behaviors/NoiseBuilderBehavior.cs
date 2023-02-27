@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace codexhere.MarchingCubes.NoiseGen.Behaviors {
+namespace codexhere.MarchingCubes.NoiseGen.Naive.Behaviors {
     public class NoiseBuilderBehavior : MonoBehaviour {
         public async Task<float[]> BuildNoise(Vector2Int gridSize) {
             BaseNoiseGeneratorBehavior[] noiseGeneratorList = GetComponents<BaseNoiseGeneratorBehavior>();

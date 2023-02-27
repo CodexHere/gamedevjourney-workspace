@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading;
-using codexhere.MarchingCubes.NoiseGen;
-using codexhere.MarchingCubes.NoiseGen.Behaviors;
+using codexhere.MarchingCubes.NoiseGen.Naive;
+using codexhere.MarchingCubes.NoiseGen.Naive.Behaviors;
 using UnityEngine;
 using UGizmos = UnityEngine.Gizmos;
 

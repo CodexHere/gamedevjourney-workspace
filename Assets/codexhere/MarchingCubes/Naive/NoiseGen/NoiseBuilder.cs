@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace codexhere.MarchingCubes.NoiseGen {
+namespace codexhere.MarchingCubes.NoiseGen.Naive {
 
     [Serializable]
     public struct NoiseBuilderOptions {
