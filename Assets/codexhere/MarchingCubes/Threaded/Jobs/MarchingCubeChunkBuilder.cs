@@ -4,20 +4,33 @@ using UnityEngine;
 
 public class MarchingCubeChunkBuilder : JobQueueBuilder {
     private Vector2Int gridSize;
-    private NativeArray<Vector3> n_cubeVerts;
 
-    // TODO: Consider encapsulating in the constructor
     private Vector2Int NoiseSize => gridSize + Vector2Int.one;
-    private int NoiseSizeLength => NoiseSize.x * NoiseSize.x * NoiseSize.y;
+    private int NoiseSizeLength {
+        get {
+            try {
+                checked {
+                    return NoiseSize.x * NoiseSize.x * NoiseSize.y;
+                }
+            } catch {
+                Debug.Log("Supplied GridSize is too large, try a smaller size.");
+            }
+
+            return -1;
+        }
+    }
+
+    // todo: make private
+    public NativeArray<Vector3> n_cubeVerts;
 
     public MarchingCubeChunkBuilder(Vector2Int gridSize) {
-        disposableItems = new() {
-            n_cubeVerts
-        };
-
         this.gridSize = gridSize;
 
         n_cubeVerts = new(NoiseSizeLength, Allocator.Persistent);
+
+        disposableItems = new() {
+            n_cubeVerts
+        };
     }
 
     public void Build() {

@@ -17,6 +17,10 @@ public struct JobCreateCubeVectors : IJob {
                 for (int z = 0; z < NoiseSize.x; z++) {
                     Vector3 newVert = new(x, y, z);
                     int vertIdx = Utils.GetIndexFromVert(newVert, NoiseSize);
+
+                    if (vertIdx > (n_vertices.Length - 10))
+                        Debug.Log($"{vertIdx} out of {n_vertices.Length}");
+
                     n_vertices[vertIdx] = newVert;
                 }
             }

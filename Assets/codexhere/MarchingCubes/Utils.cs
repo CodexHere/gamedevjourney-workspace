@@ -10,7 +10,7 @@ namespace codexhere.MarchingCubes {
         * More Info: https://www.youtube.com/watch?v=0V4Y17yWwB0
         */
         public static int GetIndexFromVert(Vector3 position, Vector2Int size) {
-            return (int)(((position.y + (size.y * position.x)) * size.x) + position.z);
+            return (((int)position.y + (size.y * (int)position.x)) * size.x) + (int)position.z;
         }
 
         /**

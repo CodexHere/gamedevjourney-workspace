@@ -1,13 +1,15 @@
 
 
 using codexhere.System;
-using codexhere.Unity.Jobs;
+using Unity.Jobs;
 
 public abstract class JobQueueBuilder : IBaseDisposable {
-    protected JobHandleExtended jobHandle = default;
+    public bool IsCompleted => jobHandle.IsCompleted;
+
+    protected JobHandle jobHandle = default;
 
     public void Complete() {
-        if (!jobHandle.CanComplete) {
+        if (!jobHandle.IsCompleted) {
             return;
         }
 
