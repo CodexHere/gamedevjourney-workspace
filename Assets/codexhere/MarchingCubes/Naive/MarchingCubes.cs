@@ -56,8 +56,8 @@ namespace codexhere.MarchingCubes.Naive {
                         Vector3 cubePosition = new(x, y, z);
                         int cubeVertIdx = Utils.GetIndexFromVert(cubePosition, GridSize);
 
-                        float[] cubeData = BuildCubeData(cubePosition, noiseMap);
-                        int cubeConfigIdx = GetCubeConfigIndex(cubeData);
+                        float[] cubeData = Utils.BuildCubeData(cubePosition, noiseMap, NoiseSize);
+                        int cubeConfigIdx = Utils.GetCubeConfigIndex(cubeData, IsoSurfaceLevel);
 
                         AddCubeToMeshData(cubePosition, cubeConfigIdx, cubeData, IsoSurfaceLevel, Smooth, ref vertices, ref triangles);
 
@@ -71,30 +71,6 @@ namespace codexhere.MarchingCubes.Naive {
             }
 
             OnMarchingCompleted?.Invoke(this, EventArgs.Empty);
-        }
-
-        private int GetCubeConfigIndex(float[] cubeData) {
-            int configIndex = 0;
-
-            for (int cornerIdx = 0; cornerIdx < cubeData.Length; cornerIdx++) {
-                if (IsoSurfaceLevel <= cubeData[cornerIdx]) {
-                    configIndex |= 1 << cornerIdx;
-                }
-            }
-
-            return configIndex;
-        }
-
-        private float[] BuildCubeData(Vector3 cubePosition, float[] noiseMap) {
-            float[] cubeData = new float[8];
-
-            for (int cornerIdx = 0; cornerIdx < Tables.CornerOffsets.Length; cornerIdx++) {
-                Vector3 cornerPos = cubePosition + Tables.CornerOffsets[cornerIdx];
-                int cornerValIdx = Utils.GetIndexFromVert(cornerPos, NoiseSize);
-                cubeData[cornerIdx] = noiseMap[cornerValIdx];
-            }
-
-            return cubeData;
         }
 
         public static void AddCubeToMeshData(Vector3 position, int configIndex, float[] cubeData, float isoSurfaceLevel, bool smooth, ref List<Vector3> vertices, ref List<int> triangles) {

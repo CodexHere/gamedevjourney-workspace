@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace codexhere.System {
     public abstract class IBaseDisposable : IDisposable {
         protected bool isDisposed;
-        protected List<IDisposable> disposableItems;
+        protected IDisposable[] disposableItems;
 
         ~IBaseDisposable() => Dispose(false);
 
@@ -25,8 +24,6 @@ namespace codexhere.System {
             if (isDisposed || !disposing) {
                 return;
             }
-
-            Debug.Log($"Disposing {disposableItems.Count} Items");
 
             foreach (var disposable in disposableItems) {
                 disposable.Dispose();

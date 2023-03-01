@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using codexhere.MarchingCubes.NoiseGen.Naive;
 using codexhere.MarchingCubes.NoiseGen.Naive.Behaviors;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
         public bool Smooth = false;
         public bool Live = false;
         public bool Refresh = false;
+        private Task<float[]> task;
 
         private Vector2Int NoiseSize => GridSize + Vector2Int.one;
 
@@ -34,7 +36,7 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
         }
 
         private async void Update() {
-            if (!Live && !Refresh) {
+            if (!Live && !Refresh || null != task) {
                 return;
             }
 
@@ -48,7 +50,9 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
                 GridSize
             );
 
-            noiseMap = await builder.BuildNoise();
+            task = builder.BuildNoise();
+
+            noiseMap = await task;
             marcher = new MarchingCubes(transform.position, GridSize, IsoSurfaceLevel, Smooth);
             marcher.ClearMesh();
             await marcher.MarchNoise(new CancellationToken(), noiseMap);
@@ -62,6 +66,8 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
                 meshFilter.mesh = mesh;
                 meshCollider.sharedMesh = meshFilter.mesh;
             }
+
+            task = null;
         }
 
         private void OnDrawGizmos() {

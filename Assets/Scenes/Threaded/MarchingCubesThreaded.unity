@@ -219,7 +219,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfa299415c2cbc90eada83bd8316bedd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridSize: {x: 500, y: 500}
+  gridSize: {x: 10, y: 10}
+  IsoSurfaceLevel: 5.11
   refresh: 0
 --- !u!4 &302899049
 Transform:

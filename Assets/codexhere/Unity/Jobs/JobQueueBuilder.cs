@@ -8,16 +8,19 @@ public abstract class JobQueueBuilder : IBaseDisposable {
 
     protected JobHandle jobHandle = default;
 
-    public void Complete() {
+    public bool Complete() {
         if (!jobHandle.IsCompleted) {
-            return;
+            return false;
         }
 
         jobHandle.Complete();
+
+        return true;
     }
 
     public void Cancel() {
-        Complete();
+        //TODO : Test this actually cancells operating and disposes properly
+        _ = Complete();
         Dispose();
     }
 }

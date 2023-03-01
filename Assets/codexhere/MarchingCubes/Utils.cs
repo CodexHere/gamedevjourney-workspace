@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace codexhere.MarchingCubes {
@@ -23,6 +24,31 @@ namespace codexhere.MarchingCubes {
             int x = (index - (z * area)) % size.x;
 
             return new Vector3(x, y, z);
+        }
+
+        public static float[] BuildCubeData(Vector3 cubePosition, float[] noiseMap, Vector2Int NoiseSize) {
+            float[] cubeData = new float[8];
+
+            for (int cornerIdx = 0; cornerIdx < Tables.CornerOffsets.Length; cornerIdx++) {
+                Vector3 cornerPos = cubePosition + Tables.CornerOffsets[cornerIdx];
+                int cornerValIdx = GetIndexFromVert(cornerPos, NoiseSize);
+                cubeData[cornerIdx] = noiseMap.ElementAt(cornerValIdx);
+            }
+
+            return cubeData;
+        }
+
+
+        public static int GetCubeConfigIndex(float[] cubeData, float IsoSurfaceLevel) {
+            int configIndex = 0;
+
+            for (int cornerIdx = 0; cornerIdx < cubeData.Length; cornerIdx++) {
+                if (IsoSurfaceLevel <= cubeData[cornerIdx]) {
+                    configIndex |= 1 << cornerIdx;
+                }
+            }
+
+            return configIndex;
         }
     }
 
