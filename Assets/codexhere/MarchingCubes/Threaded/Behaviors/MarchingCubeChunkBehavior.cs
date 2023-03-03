@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using codexhere.MarchingCubes.NoiseGen.Naive;
+using codexhere.MarchingCubes.NoiseGen;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 

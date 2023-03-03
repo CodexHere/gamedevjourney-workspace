@@ -1,16 +1,26 @@
 using System;
-using codexhere.MarchingCubes.NoiseGen.Naive;
+using codexhere.MarchingCubes.NoiseGen;
 using codexhere.Unity.Jobs;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine;
+
+[NativeContainer]
+public struct CubeConfiguration {
+    public int configIndex;
+    public UnsafeList<float> cubeData;
+
+    public void Dispose() {
+        Debug.Log("Disposing the CubeConfiguration, baby!");
+    }
+}
 
 public class MarchingCubeChunkBuilder : JobQueueBuilder {
     private Vector2Int gridSize;
 
     public NativeArray<float> n_scalarField;
-    public NativeArray<int> n_cubeConfigurations;
-    public NativeArray<NativeArray<float>> n_cubeDatas;
+    public NativeArray<CubeConfiguration> n_cubeConfigurations;
 
     public NativeList<Vector3> n_vertices;
     public NativeList<int> n_triangles;
@@ -47,12 +57,10 @@ public class MarchingCubeChunkBuilder : JobQueueBuilder {
         n_triangles = new(Allocator.Persistent);
         n_scalarField = new(NoiseSizeLength, allocator: Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
         n_cubeConfigurations = new(NoiseSizeLength, allocator: Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-        n_cubeDatas = new(NoiseSizeLength, allocator: Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
 
         disposableItems = new IDisposable[] {
             n_scalarField,
             n_cubeConfigurations,
-            n_cubeDatas,
             n_vertices,
             n_triangles
         };
@@ -73,8 +81,7 @@ public class MarchingCubeChunkBuilder : JobQueueBuilder {
             GridSize = gridSize,
             IsoSurfaceLevel = IsoSurfaceLevel,
             // Out
-            n_cubeConfigurations = n_cubeConfigurations,
-            n_cubeDatas = n_cubeDatas,
+            n_cubeConfigurations = n_cubeConfigurations
         };
 
         JobConstructMesh jobConstructMesh = new() {
@@ -82,7 +89,6 @@ public class MarchingCubeChunkBuilder : JobQueueBuilder {
             GridSize = gridSize,
             IsoSurfaceLevel = IsoSurfaceLevel,
             n_cubeConfigurations = n_cubeConfigurations,
-            n_cubeDatas = n_cubeDatas,
             // Out
             n_vertices = n_vertices,
             n_triangles = n_triangles

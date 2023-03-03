@@ -1,5 +1,5 @@
 using codexhere.MarchingCubes;
-using codexhere.MarchingCubes.NoiseGen.Naive;
+using codexhere.MarchingCubes.NoiseGen;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;

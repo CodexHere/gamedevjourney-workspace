@@ -9,9 +9,7 @@ public struct JobConstructMesh : IJobParallelFor {
     [ReadOnly]
     public float IsoSurfaceLevel;
     [ReadOnly]
-    public NativeArray<int> n_cubeConfigurations;
-    [ReadOnly]
-    public NativeArray<NativeArray<float>> n_cubeDatas;
+    public NativeArray<CubeConfiguration> n_cubeConfigurations;
 
     public NativeList<Vector3> n_vertices;
     public NativeList<int> n_triangles;
@@ -23,7 +21,8 @@ public struct JobConstructMesh : IJobParallelFor {
     }
 
     public void AddCubeToMeshData(Vector3 position, int index) {
-        int[] triangleConfig = Tables.Triangles[n_cubeConfigurations[index]];
+        CubeConfiguration cubeConfig = n_cubeConfigurations[index];
+        int[] triangleConfig = Tables.Triangles[cubeConfig.configIndex];
 
         for (int edgeCheckIndex = 0; edgeCheckIndex < triangleConfig.Length; edgeCheckIndex++) {
             int edgeIndex = triangleConfig[edgeCheckIndex];
@@ -39,8 +38,8 @@ public struct JobConstructMesh : IJobParallelFor {
 
             Vector3 edgeVert;
 
-            float vert1Val = n_cubeDatas[index][edgePair[0]];
-            float vert2Val = n_cubeDatas[index][edgePair[1]];
+            float vert1Val = cubeConfig.cubeData[edgePair[0]];
+            float vert2Val = cubeConfig.cubeData[edgePair[1]];
 
             float diff = vert2Val - vert1Val;
             float offset = (IsoSurfaceLevel - vert1Val) / diff;

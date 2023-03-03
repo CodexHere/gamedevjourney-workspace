@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace codexhere.MarchingCubes.NoiseGen.Naive {
+namespace codexhere.MarchingCubes.NoiseGen {
     [Serializable]
     public struct NoiseBuilderOptions {
         public Vector3 Offset;
