@@ -1,6 +1,5 @@
 using codexhere.MarchingCubes;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine;
 
@@ -16,7 +15,7 @@ public struct JobDetermineCubeConfigs : IJobParallelFor {
 
     public void Execute(int index) {
         Vector3 cubePosition = Utils.GetVertFromIndex(index, GridSize);
-        UnsafeList<float> cubeData = BuildCubeData(cubePosition);
+        NativeArray<float> cubeData = BuildCubeData(cubePosition);
         int cubeConfigIndex = GetCubeConfigIndex(cubeData, IsoSurfaceLevel);
 
         n_cubeConfigurations[index] = new CubeConfiguration() {
@@ -25,8 +24,8 @@ public struct JobDetermineCubeConfigs : IJobParallelFor {
         };
     }
 
-    public UnsafeList<float> BuildCubeData(Vector3 cubePosition) {
-        UnsafeList<float> cubeData = new(8, Allocator.Temp);
+    public NativeArray<float> BuildCubeData(Vector3 cubePosition) {
+        NativeArray<float> cubeData = new(8, Allocator.Temp);
 
         for (int cornerIdx = 0; cornerIdx < Tables.CornerOffsets.Length; cornerIdx++) {
             Vector3 cornerPos = cubePosition + Tables.CornerOffsets[cornerIdx];
@@ -37,7 +36,7 @@ public struct JobDetermineCubeConfigs : IJobParallelFor {
         return cubeData;
     }
 
-    public int GetCubeConfigIndex(UnsafeList<float> cubeData, float IsoSurfaceLevel) {
+    public int GetCubeConfigIndex(NativeArray<float> cubeData, float IsoSurfaceLevel) {
         int configIndex = 0;
 
         for (int cornerIdx = 0; cornerIdx < cubeData.Length; cornerIdx++) {

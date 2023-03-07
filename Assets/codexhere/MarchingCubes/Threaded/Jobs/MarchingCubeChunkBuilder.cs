@@ -2,18 +2,12 @@ using System;
 using codexhere.MarchingCubes.NoiseGen;
 using codexhere.Unity.Jobs;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine;
 
-[NativeContainer]
 public struct CubeConfiguration {
     public int configIndex;
-    public UnsafeList<float> cubeData;
-
-    public void Dispose() {
-        Debug.Log("Disposing the CubeConfiguration, baby!");
-    }
+    public NativeArray<float> cubeData;
 }
 
 public class MarchingCubeChunkBuilder : JobQueueBuilder {
@@ -55,8 +49,8 @@ public class MarchingCubeChunkBuilder : JobQueueBuilder {
 
         n_vertices = new(Allocator.Persistent);
         n_triangles = new(Allocator.Persistent);
-        n_scalarField = new(NoiseSizeLength, allocator: Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-        n_cubeConfigurations = new(NoiseSizeLength, allocator: Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+        n_scalarField = new(NoiseSizeLength, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+        n_cubeConfigurations = new(NoiseSizeLength, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
 
         disposableItems = new IDisposable[] {
             n_scalarField,
