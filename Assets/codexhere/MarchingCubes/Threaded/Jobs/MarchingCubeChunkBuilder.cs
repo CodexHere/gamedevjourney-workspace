@@ -7,7 +7,7 @@ using UnityEngine;
 
 public struct CubeConfiguration {
     public int configIndex;
-    public NativeArray<float> cubeData;
+    public FixedList64Bytes<float> cubeData;
 }
 
 public class MarchingCubeChunkBuilder : JobQueueBuilder {
