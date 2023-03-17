@@ -19,8 +19,9 @@ public struct JobDetermineCubeConfigs : IJobParallelFor {
         int cubeConfigIndex = GetCubeConfigIndex(cubeData, IsoSurfaceLevel);
 
         n_cubeConfigurations[index] = new CubeConfiguration() {
+            cubePosition = cubePosition,
             cubeData = cubeData,
-            configIndex = cubeConfigIndex,
+            configIndex = cubeConfigIndex
         };
     }
 

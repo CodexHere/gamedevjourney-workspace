@@ -6,8 +6,9 @@ using Unity.Jobs;
 using UnityEngine;
 
 public struct CubeConfiguration {
-    public int configIndex;
+    public Vector3 cubePosition; //TODO: is this needed? I'm not sure... might need for creating new verts offset by this position!!!!!!
     public FixedList64Bytes<float> cubeData;
+    public int configIndex;
 }
 
 public class MarchingCubeChunkBuilder : JobQueueBuilder {
@@ -51,6 +52,9 @@ public class MarchingCubeChunkBuilder : JobQueueBuilder {
         n_triangles = new(5 * 3 * NoiseSizeLength, Allocator.Persistent);
         n_scalarField = new(NoiseSizeLength, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
         n_cubeConfigurations = new(NoiseSizeLength, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+
+        Debug.Log($"Instantiate Verts {n_vertices.Capacity} ({(float)n_vertices.Capacity / 3}) | {(float)n_vertices.Length} ({(float)n_vertices.Length / 3})");
+        Debug.Log($"Instantiate Tris {n_triangles.Capacity} ({(float)n_triangles.Capacity / 3}) | {(float)n_triangles.Length} ({(float)n_triangles.Length / 3})");
 
         disposableItems = new IDisposable[] {
             n_scalarField,

@@ -18,12 +18,10 @@ public class MarchingCubeChunkBehavior : MonoBehaviour {
     private MeshFilter meshFilter;
 
     private void OnDisable() {
-        Debug.Log("OnDisable Called");
         builder?.Cancel();
     }
 
     private void OnDestroy() {
-        Debug.Log("OnDestroy Called");
         builder?.Cancel();
     }
 
@@ -58,8 +56,7 @@ public class MarchingCubeChunkBehavior : MonoBehaviour {
 
         if (builder.Complete()) {
             timer.Stop();
-            Debug.Log($"Job Completed in: {timer.Elapsed.TotalSeconds:F2}s");
-            Debug.Log("Completed Job # of Items is: " + builder.n_cubeConfigurations[1]);
+            Debug.Log(message: $"Job Completed in: {timer.Elapsed.TotalSeconds:F2}s");
 
             _ = await BuildMesh();
 
@@ -76,6 +73,13 @@ public class MarchingCubeChunkBehavior : MonoBehaviour {
         Mesh mesh = new();
 
         meshFilter = GetComponent<MeshFilter>();
+
+        Debug.Log($"Ended Verts {builder.n_vertices.Length} ({(float)builder.n_vertices.Length / 3})");
+        Debug.Log($"Ended Tris {builder.n_triangles.Length} ({(float)builder.n_triangles.Length / 3})");
+
+        var tris = builder.n_triangles.ToArray();
+
+        Debug.Log($"Ended Tris  2 {tris.Length} ({(float)tris.Length / 3})");
 
         mesh.vertices = builder.n_vertices.ToArray();
         mesh.triangles = builder.n_triangles.ToArray();
