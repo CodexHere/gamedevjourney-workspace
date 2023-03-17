@@ -77,8 +77,8 @@ public class MarchingCubeChunkBehavior : MonoBehaviour {
 
         meshFilter = GetComponent<MeshFilter>();
 
-        mesh.triangles = builder.n_triangles.ToArray();
         mesh.vertices = builder.n_vertices.ToArray();
+        mesh.triangles = builder.n_triangles.ToArray();
 
         meshFilter.mesh = mesh;
 

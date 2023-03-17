@@ -47,8 +47,8 @@ public class MarchingCubeChunkBuilder : JobQueueBuilder {
     public MarchingCubeChunkBuilder(Vector2Int gridSize) {
         this.gridSize = gridSize;
 
-        n_vertices = new(Allocator.Persistent);
-        n_triangles = new(Allocator.Persistent);
+        n_vertices = new(5 * 4 * NoiseSizeLength, Allocator.Persistent);
+        n_triangles = new(5 * 3 * NoiseSizeLength, Allocator.Persistent);
         n_scalarField = new(NoiseSizeLength, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
         n_cubeConfigurations = new(NoiseSizeLength, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
 
@@ -80,7 +80,7 @@ public class MarchingCubeChunkBuilder : JobQueueBuilder {
 
         JobConstructMesh jobConstructMesh = new() {
             // In
-            GridSize = gridSize,
+            NoiseSize = NoiseSize,
             IsoSurfaceLevel = IsoSurfaceLevel,
             n_cubeConfigurations = n_cubeConfigurations,
             // Out
@@ -101,7 +101,7 @@ public class MarchingCubeChunkBuilder : JobQueueBuilder {
         );
 
         jobHandle = jobConstructMesh.Schedule(
-            GridSizeLength,
+            NoiseSizeLength,
             (int)InnerloopBatchCount.Count_8,
             jobHandle
         );
