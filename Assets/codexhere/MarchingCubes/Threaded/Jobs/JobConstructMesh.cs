@@ -17,6 +17,12 @@ public struct JobConstructMesh : IJobParallelFor {
     int _vertsPerGridRow;
 
     public void Execute(int index) {
+        // TODO: Try to make this more optimized by only kicking off the right amount
+        // We may have less cubeConfigurations than entire grid space, so we need to skip those
+        if (index >= n_cubeConfigurations.Length) {
+            return;
+        }
+
         // A Grid row has 4 verts times the grid width, and a max of 5 triangles per cubic space within the grid
         _vertsPerGridRow = 4 * 5 * NoiseSize.x;
 
@@ -29,6 +35,7 @@ public struct JobConstructMesh : IJobParallelFor {
         CubeConfiguration cubeConfig = n_cubeConfigurations[index];
         int[] triangleConfig = Tables.Triangles[cubeConfig.configIndex];
 
+        // TODO: Determine if this is necessary... Probably, but need to check
         // Reallocate more memory, if needed
         // if (n_vertices.Capacity < n_vertices.Length + GridSize.x * 5) {
         //     n_vertices.Capacity = n_vertices.Length + GridSize.x * _vertsPerGridRow;
@@ -52,7 +59,7 @@ public struct JobConstructMesh : IJobParallelFor {
             float vert2Val = cubeConfig.cubeData[edgePair[1]];
 
             float diff = vert2Val - vert1Val;
-            float offset = (IsoSurfaceLevel - vert1Val) / diff;
+            float offset = diff != 0 ? (IsoSurfaceLevel - vert1Val) / diff : 0.5f;
 
             edgeVert = vert1 + ((vert2 - vert1) * offset);
 
@@ -71,7 +78,7 @@ public struct JobConstructMesh : IJobParallelFor {
             n_vertices.Add(vertPos);
             n_triangles.Add(n_vertices.Length - 1);
 
-            Debug.Log($"Adding {vertPos} to {n_vertices.Length - 1} for index {index}");
+            // Debug.Log($"Adding {vertPos} to {n_vertices.Length - 1} for index {index}");
         }
     }
 }

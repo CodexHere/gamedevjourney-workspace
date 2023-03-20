@@ -51,10 +51,7 @@ public class MarchingCubeChunkBuilder : JobQueueBuilder {
         n_vertices = new(5 * 4 * NoiseSizeLength, Allocator.Persistent);
         n_triangles = new(5 * 3 * NoiseSizeLength, Allocator.Persistent);
         n_scalarField = new(NoiseSizeLength, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-        n_cubeConfigurations = new(NoiseSizeLength, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-
-        Debug.Log($"Instantiate Verts {n_vertices.Capacity} ({(float)n_vertices.Capacity / 3}) | {(float)n_vertices.Length} ({(float)n_vertices.Length / 3})");
-        Debug.Log($"Instantiate Tris {n_triangles.Capacity} ({(float)n_triangles.Capacity / 3}) | {(float)n_triangles.Length} ({(float)n_triangles.Length / 3})");
+        n_cubeConfigurations = new(GridSizeLength, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
 
         disposableItems = new IDisposable[] {
             n_scalarField,
@@ -65,22 +62,44 @@ public class MarchingCubeChunkBuilder : JobQueueBuilder {
     }
 
     public void Build(float IsoSurfaceLevel, NoiseBuilderOptions noiseOptions) {
-        JobCreateScalarField jobCreateScalarField = new() {
-            // In
-            noiseOptions = noiseOptions,
-            NoiseSize = NoiseSize,
-            // Out
-            n_scalarField = n_scalarField
+        // JobCreateScalarField jobCreateScalarField = new() {
+        //     // In
+        //     noiseOptions = noiseOptions,
+        //     NoiseSize = NoiseSize,
+        //     // Out
+        //     n_scalarField = n_scalarField
+        // };
+
+        // JobDetermineCubeConfigs jobDetermineCubeConfigs = new() {
+        //     // In
+        //     n_scalarField = n_scalarField,
+        //     GridSize = gridSize,
+        //     IsoSurfaceLevel = IsoSurfaceLevel,
+        //     // Out
+        //     n_cubeConfigurations = n_cubeConfigurations
+        // };
+
+        // FIXME: Remove this test hackery
+        n_cubeConfigurations = new(10, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+        var cubeData = new FixedList64Bytes<float> {
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
         };
 
-        JobDetermineCubeConfigs jobDetermineCubeConfigs = new() {
-            // In
-            n_scalarField = n_scalarField,
-            GridSize = gridSize,
-            IsoSurfaceLevel = IsoSurfaceLevel,
-            // Out
-            n_cubeConfigurations = n_cubeConfigurations
-        };
+        // Fake a bunch of configs
+        for (var x = 0; x < GridSizeLength; x++) {
+            n_cubeConfigurations[x] = new CubeConfiguration() {
+                configIndex = x + 1,
+                cubePosition = Vector3.zero,
+                cubeData = cubeData
+            };
+        }
 
         JobConstructMesh jobConstructMesh = new() {
             // In
@@ -92,17 +111,17 @@ public class MarchingCubeChunkBuilder : JobQueueBuilder {
             n_triangles = n_triangles
         };
 
-        jobHandle = jobCreateScalarField.Schedule(
-            NoiseSizeLength,
-            (int)InnerloopBatchCount.Count_8,
-            jobHandle
-        );
+        // jobHandle = jobCreateScalarField.Schedule(
+        //     NoiseSizeLength,
+        //     (int)InnerloopBatchCount.Count_8,
+        //     jobHandle
+        // );
 
-        jobHandle = jobDetermineCubeConfigs.Schedule(
-            NoiseSizeLength,
-            (int)InnerloopBatchCount.Count_8,
-            jobHandle
-        );
+        // jobHandle = jobDetermineCubeConfigs.Schedule(
+        //     NoiseSizeLength,
+        //     (int)InnerloopBatchCount.Count_8,
+        //     jobHandle
+        // );
 
         jobHandle = jobConstructMesh.Schedule(
             NoiseSizeLength,
