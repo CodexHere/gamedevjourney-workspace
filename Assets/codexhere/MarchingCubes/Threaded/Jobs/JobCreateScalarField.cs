@@ -8,6 +8,8 @@ using UnityEngine;
 [BurstCompile]
 public struct JobCreateScalarField : IJobParallelFor {
     [ReadOnly]
+    public Vector2Int GridSize;
+    [ReadOnly]
     public Vector2Int NoiseSize;
     [ReadOnly]
     public NoiseBuilderOptions noiseOptions;
@@ -22,6 +24,8 @@ public struct JobCreateScalarField : IJobParallelFor {
             ((noisePos.z + noiseOptions.Offset.z) / noiseOptions.Scale) + 0.001f
         );
 
-        n_scalarField[index] = noiseOptions.Octave * NoiseSize.y * noiseValue;
+        // Normalize with noisePos.y
+        //TODO: Move normalization to after all additive noise concepts. Take a look at the builder for the naive implementation.
+        n_scalarField[index] = noisePos.y - (noiseOptions.Octave * GridSize.y * noiseValue);
     }
 }

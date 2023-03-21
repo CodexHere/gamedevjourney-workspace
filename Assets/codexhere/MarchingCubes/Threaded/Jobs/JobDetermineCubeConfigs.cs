@@ -9,6 +9,8 @@ public struct JobDetermineCubeConfigs : IJobParallelFor {
     [ReadOnly]
     public Vector2Int GridSize;
     [ReadOnly]
+    public Vector2Int NoiseSize;
+    [ReadOnly]
     public float IsoSurfaceLevel;
 
     public NativeArray<CubeConfiguration> n_cubeConfigurations;
@@ -30,10 +32,8 @@ public struct JobDetermineCubeConfigs : IJobParallelFor {
 
         for (int cornerIdx = 0; cornerIdx < Tables.CornerOffsets.Length; cornerIdx++) {
             Vector3 cornerPos = cubePosition + Tables.CornerOffsets[cornerIdx];
-            int cornerValIdx = Utils.GetIndexFromVert(cornerPos, GridSize);
+            int cornerValIdx = Utils.GetIndexFromVert(cornerPos, NoiseSize);
             cubeData.Add(n_scalarField[cornerValIdx]);
-            // TODO: Get rid of cruft if not needed
-            // cubeData[cornerIdx] = n_scalarField[cornerValIdx];
         }
 
         return cubeData;

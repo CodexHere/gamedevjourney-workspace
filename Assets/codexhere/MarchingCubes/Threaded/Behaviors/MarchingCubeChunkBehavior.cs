@@ -41,7 +41,7 @@ public class MarchingCubeChunkBehavior : MonoBehaviour {
             builder = new(gridSize);
             builder.Build(IsoSurfaceLevel, new NoiseBuilderOptions() {
                 Octave = 1,
-                Offset = Vector3.zero,
+                Offset = new Vector3(37.5f, 0, 0),
                 Scale = 1
             });
         } catch (OverflowException e) {
@@ -74,15 +74,9 @@ public class MarchingCubeChunkBehavior : MonoBehaviour {
 
         meshFilter = GetComponent<MeshFilter>();
 
-        Debug.Log($"Ended Verts {builder.n_vertices.Length} ({(float)builder.n_vertices.Length / 3})");
-        Debug.Log($"Ended Tris {builder.n_triangles.Length} ({(float)builder.n_triangles.Length / 3})");
-
-        var tris = builder.n_triangles.ToArray();
-
-        Debug.Log($"Ended Tris  2 {tris.Length} ({(float)tris.Length / 3})");
-
         mesh.vertices = builder.n_vertices.ToArray();
         mesh.triangles = builder.n_triangles.ToArray();
+        mesh.RecalculateNormals();
 
         meshFilter.mesh = mesh;
 

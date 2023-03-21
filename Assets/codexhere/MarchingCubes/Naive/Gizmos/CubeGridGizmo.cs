@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using codexhere.MarchingCubes.NoiseGen.Naive;
 using codexhere.MarchingCubes.NoiseGen.Naive.Behaviors;
 using UnityEngine;
+using MSSystem = System;
 using UGizmos = UnityEngine.Gizmos;
 
 namespace codexhere.MarchingCubes.Naive.Gizmos {
@@ -40,6 +41,10 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
                 return;
             }
 
+            MSSystem.Diagnostics.Stopwatch timer = new();
+            timer.Start();
+            Debug.Log("Starting new Task...");
+
             Refresh = false;
 
             BaseNoiseGeneratorBehavior[] noiseGenerators = GetComponents<BaseNoiseGeneratorBehavior>();
@@ -66,6 +71,9 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
                 meshFilter.mesh = mesh;
                 meshCollider.sharedMesh = meshFilter.mesh;
             }
+
+            timer.Stop();
+            Debug.LogFormat("CubeGridGizmo Render Time: {0}", timer.Elapsed.TotalSeconds);
 
             task = null;
         }
@@ -105,13 +113,15 @@ namespace codexhere.MarchingCubes.Naive.Gizmos {
                 return;
             }
 
-            for (int x = 0; x < (NoiseSize.x * NoiseSize.x * NoiseSize.y); x++) {
-                float val = noiseMap[x];
+            for (int index = 0; index < (NoiseSize.x * NoiseSize.x * NoiseSize.y); index++) {
+                float val = noiseMap[index];
 
-                Color clrVal = (val > IsoSurfaceLevel) ? new Color(1, 1, 1, 0.1f) : Color.Lerp(Color.white, Color.black, IsoSurfaceLevel - val);
+                Color clrVal = Color.Lerp(Color.black, Color.white, val - IsoSurfaceLevel);
+                float sphereSize = Mathf.Lerp(0.1f, 0.025f, Mathf.Abs(val - IsoSurfaceLevel));
+
                 UGizmos.color = clrVal;
-                Vector3 vert = Utils.GetVertFromIndex(x, NoiseSize);
-                UGizmos.DrawSphere(vert, 0.1f);
+                Vector3 vert = Utils.GetVertFromIndex(index, NoiseSize);
+                UGizmos.DrawSphere(vert, sphereSize);
             }
         }
     }

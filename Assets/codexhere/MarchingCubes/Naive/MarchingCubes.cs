@@ -57,9 +57,9 @@ namespace codexhere.MarchingCubes.Naive {
                         int cubeVertIdx = Utils.GetIndexFromVert(cubePosition, GridSize);
 
                         float[] cubeData = Utils.BuildCubeData(cubePosition, noiseMap, NoiseSize);
-                        int cubeConfigIdx = Utils.GetCubeConfigIndex(cubeData, IsoSurfaceLevel);
+                        int cubeConfigIndex = Utils.GetCubeConfigIndex(cubeData, IsoSurfaceLevel);
 
-                        AddCubeToMeshData(cubePosition, cubeConfigIdx, cubeData, IsoSurfaceLevel, Smooth, ref vertices, ref triangles);
+                        AddCubeToMeshData(cubePosition, cubeConfigIndex, cubeData, IsoSurfaceLevel, Smooth, ref vertices, ref triangles);
 
                         OnCubeProcessed?.Invoke(this, cubeVertIdx);
 

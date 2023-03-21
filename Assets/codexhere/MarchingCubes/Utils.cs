@@ -19,9 +19,9 @@ namespace codexhere.MarchingCubes {
         */
         public static Vector3 GetVertFromIndex(int index, Vector2Int size) {
             int area = size.x * size.y;
-            int z = index / area;
-            int y = (index - (z * area)) / size.x;
-            int x = (index - (z * area)) % size.x;
+            int x = index / area;
+            int z = (index - (x * area)) % size.x;
+            int y = (index - (x * area)) / size.x;
 
             return new Vector3(x, y, z);
         }

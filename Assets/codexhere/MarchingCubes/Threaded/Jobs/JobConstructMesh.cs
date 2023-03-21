@@ -5,7 +5,7 @@ using UnityEngine;
 
 public struct JobConstructMesh : IJobParallelFor {
     [ReadOnly]
-    public Vector2Int NoiseSize;
+    public Vector2Int GridSize;
     [ReadOnly]
     public float IsoSurfaceLevel;
     [ReadOnly]
@@ -14,8 +14,6 @@ public struct JobConstructMesh : IJobParallelFor {
     [NativeDisableParallelForRestriction] public NativeList<Vector3> n_vertices;
     [NativeDisableParallelForRestriction] public NativeList<int> n_triangles;
 
-    int _vertsPerGridRow;
-
     public void Execute(int index) {
         // TODO: Try to make this more optimized by only kicking off the right amount
         // We may have less cubeConfigurations than entire grid space, so we need to skip those
@@ -23,10 +21,7 @@ public struct JobConstructMesh : IJobParallelFor {
             return;
         }
 
-        // A Grid row has 4 verts times the grid width, and a max of 5 triangles per cubic space within the grid
-        _vertsPerGridRow = 4 * 5 * NoiseSize.x;
-
-        Vector3 cubePosition = Utils.GetVertFromIndex(index, NoiseSize);
+        Vector3 cubePosition = Utils.GetVertFromIndex(index, GridSize);
 
         AddCubeToMeshData(cubePosition, index);
     }
@@ -34,12 +29,6 @@ public struct JobConstructMesh : IJobParallelFor {
     public void AddCubeToMeshData(Vector3 position, int index) {
         CubeConfiguration cubeConfig = n_cubeConfigurations[index];
         int[] triangleConfig = Tables.Triangles[cubeConfig.configIndex];
-
-        // TODO: Determine if this is necessary... Probably, but need to check
-        // Reallocate more memory, if needed
-        // if (n_vertices.Capacity < n_vertices.Length + GridSize.x * 5) {
-        //     n_vertices.Capacity = n_vertices.Length + GridSize.x * _vertsPerGridRow;
-        // }
 
         for (int edgeCheckIndex = 0; edgeCheckIndex < triangleConfig.Length; edgeCheckIndex++) {
             int edgeIndex = triangleConfig[edgeCheckIndex];
@@ -65,20 +54,15 @@ public struct JobConstructMesh : IJobParallelFor {
 
             Vector3 vertPos = edgeVert + position;
 
+            int vertIndex = -1;
             // int vertIndex = n_vertices.IndexOf(vertPos);
 
-            // if (-1 == vertIndex) {
-            //     n_vertices.Add(vertPos);
-            //     n_triangles.Add(n_vertices.Length - 1);
-            // } else {
-            //     n_triangles.Add(vertIndex);
-            // }
-
-            //FIXME: This is the sloppy approach
-            n_vertices.Add(vertPos);
-            n_triangles.Add(n_vertices.Length - 1);
-
-            // Debug.Log($"Adding {vertPos} to {n_vertices.Length - 1} for index {index}");
+            if (-1 == vertIndex) {
+                n_vertices.Add(vertPos);
+                n_triangles.Add(n_vertices.Length - 1);
+            } else {
+                n_triangles.Add(vertIndex);
+            }
         }
     }
 }
