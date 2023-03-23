@@ -1,8 +1,10 @@
 using codexhere.MarchingCubes;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 
+[BurstCompile]
 public struct JobConstructMesh : IJobParallelFor {
     [ReadOnly]
     public Vector2Int GridSize;
@@ -11,8 +13,8 @@ public struct JobConstructMesh : IJobParallelFor {
     [ReadOnly]
     public NativeArray<CubeConfiguration> n_cubeConfigurations;
 
-    [NativeDisableParallelForRestriction] public NativeList<Vector3> n_vertices;
-    [NativeDisableParallelForRestriction] public NativeList<int> n_triangles;
+    public NativeList<Vector3>.ParallelWriter n_vertices;
+    public NativeList<int>.ParallelWriter n_triangles;
 
     public void Execute(int index) {
         // TODO: Try to make this more optimized by only kicking off the right amount
@@ -58,8 +60,8 @@ public struct JobConstructMesh : IJobParallelFor {
             // int vertIndex = n_vertices.IndexOf(vertPos);
 
             if (-1 == vertIndex) {
-                n_vertices.Add(vertPos);
-                n_triangles.Add(n_vertices.Length - 1);
+                n_vertices.AddNoResize(vertPos);
+                n_triangles.AddNoResize(n_vertices.Length - 1);
             } else {
                 n_triangles.Add(vertIndex);
             }

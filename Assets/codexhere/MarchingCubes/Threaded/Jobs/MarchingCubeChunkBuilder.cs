@@ -87,8 +87,8 @@ public class MarchingCubeChunkBuilder : JobQueueBuilder {
             IsoSurfaceLevel = IsoSurfaceLevel,
             n_cubeConfigurations = n_cubeConfigurations,
             // Out
-            n_vertices = n_vertices,
-            n_triangles = n_triangles
+            n_vertices = n_vertices.AsParallelWriter(),
+            n_triangles = n_triangles.AsParallelWriter()
         };
 
         jobHandle = jobCreateScalarField.Schedule(

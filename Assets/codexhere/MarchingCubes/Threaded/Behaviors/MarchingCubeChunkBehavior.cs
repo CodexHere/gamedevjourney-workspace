@@ -74,6 +74,10 @@ public class MarchingCubeChunkBehavior : MonoBehaviour {
 
         meshFilter = GetComponent<MeshFilter>();
 
+        var tris = builder.n_triangles.ToArray();
+        Debug.Log($"Ended Tris {tris.Length} ({(float)tris.Length / 3})");
+
+
         mesh.vertices = builder.n_vertices.ToArray();
         mesh.triangles = builder.n_triangles.ToArray();
         mesh.RecalculateNormals();
